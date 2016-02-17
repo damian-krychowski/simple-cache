@@ -127,6 +127,11 @@ namespace SimpleCache
             }
         }
 
+        public void RebuildIndexes()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool ContainsIndexOn<TIndexOnFirst, TIndexOnSecond>(
             Expression<Func<TEntity, TIndexOnFirst>> firstIndexedProperty,
             Expression<Func<TEntity, TIndexOnSecond>> secondIndexedProperty)

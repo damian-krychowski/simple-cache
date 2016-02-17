@@ -134,6 +134,7 @@ namespace SimpleCache
         private void AddItemToIndex(TIndexOn indexKey, Guid itemId)
         {
             List<Guid> indexList = GetIndexList(indexKey);
+            _indexationList.AddOrUpdate(itemId, indexKey, (k, v) => indexKey);
 
             lock (_locks[indexKey])
             {

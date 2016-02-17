@@ -33,5 +33,7 @@ namespace SimpleCache
 
         void TryRemoveRange(IEnumerable<TEntity> entities);
         void TryRemoveRange(IEnumerable<Guid> entitiesIds);
+
+        void RebuildIndexes();
     }
 }

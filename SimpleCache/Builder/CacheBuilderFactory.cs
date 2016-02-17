@@ -8,7 +8,7 @@ namespace SimpleCache.Builder
 {
     public class CacheBuilderFactory
     {
-        public ICacheBuilder<TEntity> CreateCacheBuilder<TEntity>() where TEntity : IEntity
+        public static ICacheBuilder<TEntity> CreateCacheBuilder<TEntity>() where TEntity : IEntity
         {
             return new CacheBuilder<TEntity>();
         }

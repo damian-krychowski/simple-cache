@@ -176,6 +176,11 @@ namespace SimpleCache
         {
             List<Guid> indexList = GetIndexList(indexKeyX, indexKeyY);
 
+            _indexationList.AddOrUpdate(
+                itemId, 
+                new Tuple<TIndexedOnFirst, TIndexedOnSecond>(indexKeyX, indexKeyY), 
+                (k, v) => new Tuple<TIndexedOnFirst, TIndexedOnSecond>(indexKeyX, indexKeyY));
+
             lock (_locks[indexKeyX,indexKeyY])
             {
                 indexList.Add(itemId);
