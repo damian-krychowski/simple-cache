@@ -12,7 +12,7 @@ using SimpleCache.Indexes.OneDimensional;
 
 namespace SimpleCache
 {
-    internal class SimpleCache<TEntity> : ISimpleCache<TEntity>
+    internal class SimpleCache<TEntity> : ISimpleCacheInternal<TEntity>
         where TEntity : IEntity
     {
         readonly ConcurrentDictionary<Guid, TEntity> _items = new ConcurrentDictionary<Guid, TEntity>();
@@ -48,7 +48,7 @@ namespace SimpleCache
 
             ICacheIndex<TEntity, TIndexOn> index = FindIndex(indexExpression);
 
-            if (index == null) throw new IndexNotFoundException("Index for this property was not registered!");
+            if (index == null) throw new IndexNotFoundException($"Index {indexExpression} was not registered!");
 
             return index;
         }
@@ -63,7 +63,7 @@ namespace SimpleCache
         {
             if(indexExpression == null) throw  new ArgumentNullException(nameof(indexExpression));
 
-            return FindIndex(indexExpression) != null;
+            return _indexes.Any(x => x.IsOnExpression(indexExpression));
         }
 
 
@@ -163,6 +163,20 @@ namespace SimpleCache
             }
 
             return index as ICacheIndex<TEntity, TIndexOn>;
+        }
+
+        public ICacheIndex<TEntity, TIndexOn> CreateTemporaryIndex<TIndexOn>
+            (Expression<Func<TEntity, TIndexOn>> indexExpression)
+        {
+            var temporaryIndex = new CacheIndex<TEntity,TIndexOn>();
+            temporaryIndex.Initialize(indexExpression, this);
+            
+            foreach (var entity in _items.Values)
+            {
+                temporaryIndex.AddOrUpdate(entity);
+            }
+
+            return temporaryIndex;
         }
     }
 }

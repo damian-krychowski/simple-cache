@@ -15,9 +15,9 @@ namespace SimpleCache.Indexes.OneDimensional
         Func<TEntity, TIndexOn> _indexFunc;
         ISimpleCache<TEntity> _parentCache;
 
-        public bool IsOnExpression(Expression firstIndexedProperty)
+        public bool IsOnExpression(Expression indexExpression)
         {
-            return firstIndexedProperty.Comapre(FirstPropertyWithIndex);
+            return indexExpression.Comapre(FirstPropertyWithIndex);
         }
 
         public void AddOrUpdate(TEntity entity)

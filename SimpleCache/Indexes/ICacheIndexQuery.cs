@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using SimpleCache.Exceptions;
 using SimpleCache.Indexes.OneDimensional;
 
 namespace SimpleCache.Indexes
@@ -19,15 +20,18 @@ namespace SimpleCache.Indexes
         List<TEntity> ToList();
         IEnumerable<TEntity> AsEnumerable();
         int Count();
+
+        ICacheIndexQuery<TEntity> UseTemporaryIndexes();
     }
 
 
     internal class CacheIndexQuery<TEntity> : ICacheIndexQuery<TEntity> where TEntity : IEntity
     {
         private readonly List<IEnumerable<Guid>> _selectedIndexedItems = new List<IEnumerable<Guid>>(); 
-        private readonly ISimpleCache<TEntity> _parentCache;
+        private readonly ISimpleCacheInternal<TEntity> _parentCache;
+        private bool _shouldUseTemporaryIndexes = false;
 
-        public CacheIndexQuery(ISimpleCache<TEntity> parentCache)
+        public CacheIndexQuery(ISimpleCacheInternal<TEntity> parentCache)
         {
             _parentCache = parentCache;
         }
@@ -36,8 +40,7 @@ namespace SimpleCache.Indexes
         {
             if(indexSelector == null ) throw new ArgumentNullException(nameof(indexSelector));
 
-            var items = _parentCache
-                .Index(indexSelector)
+            var items = GetIndexOrTemporary(indexSelector)
                 .GetIdsWithUndefined();
 
             _selectedIndexedItems.Add(items);
@@ -50,8 +53,7 @@ namespace SimpleCache.Indexes
             if (indexSelector == null) throw new ArgumentNullException(nameof(indexSelector));
             if(valueCondition == null) throw new ArgumentNullException(nameof(valueCondition));
 
-            var index = _parentCache
-                .Index(indexSelector);
+            var index = GetIndexOrTemporary(indexSelector);
 
             var acceptedKeys = index.Keys
                 .Where(valueCondition);
@@ -63,6 +65,22 @@ namespace SimpleCache.Indexes
             _selectedIndexedItems.Add(items);
 
             return this;
+        }
+
+        private ICacheIndex<TEntity, TIndexOn> GetIndexOrTemporary<TIndexOn>(
+            Expression<Func<TEntity, TIndexOn>> indexSelector)
+        {
+            if (_parentCache.ContainsIndexOn(indexSelector))
+            {
+                return _parentCache.Index(indexSelector);
+            }
+
+            if (_shouldUseTemporaryIndexes)
+            {
+                return _parentCache.CreateTemporaryIndex(indexSelector);
+            }
+             
+            throw new IndexNotFoundException(indexSelector.ToString());
         }
 
         private IEnumerable<Guid> IntersectItemIds()
@@ -101,6 +119,12 @@ namespace SimpleCache.Indexes
         public int Count()
         {
             return IntersectItemIds().Count();
+        }
+
+        public ICacheIndexQuery<TEntity> UseTemporaryIndexes()
+        {
+            _shouldUseTemporaryIndexes = true;
+            return this;
         }
     }
 }

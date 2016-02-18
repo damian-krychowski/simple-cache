@@ -12,7 +12,7 @@ namespace SimpleCache.Indexes.OneDimensional
         void TryRemove(Guid entityId);
         void Rebuild();
         void Clear();
-        bool IsOnExpression(Expression firstIndexedProperty);
+        bool IsOnExpression(Expression indexExpression);
     }
 
     public interface ICacheIndex<TEntity, TIndexedOn>

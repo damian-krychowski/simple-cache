@@ -33,4 +33,11 @@ namespace SimpleCache
         void RebuildIndexes();
         void Clear();
     }
+
+    internal interface ISimpleCacheInternal<TEntity> : ISimpleCache<TEntity>
+        where TEntity : IEntity
+    {
+        ICacheIndex<TEntity, TIndexOn> CreateTemporaryIndex<TIndexOn>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression);
+    }
 }
