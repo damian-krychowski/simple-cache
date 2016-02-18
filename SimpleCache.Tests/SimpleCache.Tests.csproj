@@ -53,8 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicCacheTests.cs" />
-    <Compile Include="BasicIndex2DTests.cs" />
-    <Compile Include="BasicIndex1DTests.cs" />
+    <Compile Include="BasicIndexTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

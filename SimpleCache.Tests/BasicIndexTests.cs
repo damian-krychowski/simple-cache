@@ -7,7 +7,7 @@ using SimpleCache.Exceptions;
 namespace SimpleCache.Tests
 {
     [TestFixture]
-    internal class BasicIndex1DTests
+    internal class BasicIndexTests
     {
         class Dog : IEntity
         {
@@ -32,7 +32,7 @@ namespace SimpleCache.Tests
         {
             //Act
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp();
 
             //Assert
@@ -49,7 +49,7 @@ namespace SimpleCache.Tests
 
             //Act
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             var breedADogs = sut.Index1D(dog => dog.Breed).Get("Breed A");
@@ -67,7 +67,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-               .WithIndex1D(dog => dog.Breed)
+               .WithIndex(dog => dog.Breed)
                .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
@@ -89,7 +89,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
             
             //Act
@@ -108,7 +108,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             var updatedDog1 = new Dog { Id = dog1.Id, Breed = "Breed C", Name = "Tony" };
@@ -132,7 +132,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
@@ -148,7 +148,7 @@ namespace SimpleCache.Tests
         {
             //Arrange
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp();
 
             //Act & Assert
@@ -161,7 +161,7 @@ namespace SimpleCache.Tests
         {
             //Arrange
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp();
 
             //Act & Assert
@@ -178,7 +178,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
@@ -203,7 +203,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .WithIndex1D(dog => dog.Breed)
+                .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act

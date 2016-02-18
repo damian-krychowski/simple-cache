@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
-namespace SimpleCache.Indexes
+namespace SimpleCache.Indexes.OneDimensional
 {
     internal interface ICacheIndex<TEntity>
         where TEntity : IEntity
@@ -10,5 +12,13 @@ namespace SimpleCache.Indexes
         void TryRemove(Guid entityId);
         void Rebuild();
         void Clear();
+        bool IsOnExpression(Expression firstIndexedProperty);
+    }
+
+    public interface ICacheIndex<TEntity, TIndexedOn>
+        where TEntity: IEntity
+    {
+        IEnumerable<TEntity> Get(TIndexedOn firstIndexedId);
+        IEnumerable<TEntity> GetWithUndefined();
     }
 }

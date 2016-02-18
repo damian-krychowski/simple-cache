@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SimpleCache.Indexes.OneDimensional
 {
-    internal class Index1DMemory<TIndexOn>
+    internal class IndexMemory<TIndexOn>
     {
         readonly IndexationList _indexationList = new IndexationList();
         readonly List<Guid> _entitiesWithUndefinedKey = new List<Guid>();

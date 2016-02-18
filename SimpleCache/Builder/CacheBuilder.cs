@@ -8,43 +8,24 @@ namespace SimpleCache.Builder
         where TEntity : IEntity
     {
         #region Globals
-        readonly List<ICacheIndexDefinition1D> _index1DDefinitions = new List<ICacheIndexDefinition1D>();
-        readonly List<ICacheIndexDefinition2D> _index2DDefinitions = new List<ICacheIndexDefinition2D>();
+        readonly List<ICacheIndexDefinition> _indexesDefinitions = new List<ICacheIndexDefinition>();
         #endregion
 
         #region Interface
-        public void AddIndexDefinition<TIndexOn>(CacheIndex1DDefinition<TEntity, TIndexOn> definition)
+        public void AddIndexDefinition<TIndexOn>(CacheIndexDefinition<TEntity, TIndexOn> definition)
         {
-            _index1DDefinitions.Add(definition);
-        }
-
-        public void AddIndexDefinition<TIndexOnFisrt, TIndexOnSecond>(CacheIndex2DDefinition<TEntity, TIndexOnFisrt, TIndexOnSecond> definition)
-        {
-            _index2DDefinitions.Add(definition);
+            _indexesDefinitions.Add(definition);
         }
         #endregion
 
         #region ICacheBuilder
 
-        public ICacheBuilder<TEntity> WithIndex1D<TIndexOn>(
-            Expression<Func<TEntity, TIndexOn>> indexFisrtDimension)
+        public ICacheBuilder<TEntity> WithIndex<TIndexOn>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression)
         {
-            AddIndexDefinition(new CacheIndex1DDefinition<TEntity, TIndexOn>()
+            AddIndexDefinition(new CacheIndexDefinition<TEntity, TIndexOn>()
             {
-                IndexFirstDimension = indexFisrtDimension,
-            });
-
-            return this;
-        }
-
-        public ICacheBuilder<TEntity> WithIndex2D<TIndexOnFirst, TIndexOnSecond>(
-            Expression<Func<TEntity, TIndexOnFirst>> indexFirstDimension,
-            Expression<Func<TEntity, TIndexOnSecond>> indexSecondDimension)
-        {
-            AddIndexDefinition(new CacheIndex2DDefinition<TEntity, TIndexOnFirst, TIndexOnSecond>()
-            {
-                IndexFirstDimension = indexFirstDimension,
-                IndexSecondDimension = indexSecondDimension,
+                IndexExpression = indexExpression,
             });
 
             return this;
@@ -56,8 +37,7 @@ namespace SimpleCache.Builder
 
             cache.Initialize(new CacheDefinition()
             {
-                Indexes1D = _index1DDefinitions,
-                Indexes2D = _index2DDefinitions,
+                Indexes = _indexesDefinitions,
             });
 
             return cache;
@@ -69,8 +49,7 @@ namespace SimpleCache.Builder
 
             cache.Initialize(new CacheDefinition()
             {
-                Indexes1D = _index1DDefinitions,
-                Indexes2D = _index2DDefinitions,
+                Indexes = _indexesDefinitions,
             });
 
             cache.AddOrUpdateRange(entities);

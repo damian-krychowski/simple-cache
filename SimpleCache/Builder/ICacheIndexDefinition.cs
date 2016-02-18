@@ -5,18 +5,9 @@ using System.Net.Mime;
 
 namespace SimpleCache.Builder
 {
-    public interface ICacheIndexDefinition2D
+    public interface ICacheIndexDefinition
     {
-        Type FirstIndexOn { get; }
-        Type SecondIndexOn { get; }
-
-        Expression IndexOnFirstProperty { get; }
-        Expression IndexOnSecondProperty { get; }
-    }
-
-    public interface ICacheIndexDefinition1D
-    {
-        Type FirstIndexOn { get; }
-        Expression IndexOnProperty { get; }
+        Type IndexType { get; }
+        Expression IndexOn { get; }
     }
 }

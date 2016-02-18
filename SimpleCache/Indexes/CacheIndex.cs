@@ -5,12 +5,12 @@ using SimpleCache.ExtensionMethods;
 
 namespace SimpleCache.Indexes.OneDimensional
 {
-    internal class CacheIndex1D<TEntity, TIndexOn> : 
-        ICacheIndex1D<TEntity, TIndexOn>, 
-        ICacheIndex1D<TEntity>
+    internal class CacheIndex<TEntity, TIndexOn> : 
+        ICacheIndex<TEntity, TIndexOn>, 
+        ICacheIndex<TEntity>
         where TEntity : IEntity
     {
-        private readonly Index1DMemory<TIndexOn> _memory = new Index1DMemory<TIndexOn>();
+        private readonly IndexMemory<TIndexOn> _memory = new IndexMemory<TIndexOn>();
 
         Func<TEntity, TIndexOn> _indexFunc;
         ISimpleCache<TEntity> _parentCache;

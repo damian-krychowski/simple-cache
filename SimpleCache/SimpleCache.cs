@@ -9,7 +9,6 @@ using SimpleCache.Exceptions;
 using SimpleCache.ExtensionMethods;
 using SimpleCache.Indexes;
 using SimpleCache.Indexes.OneDimensional;
-using SimpleCache.Indexes.TwoDimensional;
 
 namespace SimpleCache
 {
@@ -19,8 +18,7 @@ namespace SimpleCache
         #region Globals
         readonly ConcurrentDictionary<Guid, TEntity> _items = new ConcurrentDictionary<Guid, TEntity>();
 
-        readonly List<ICacheIndex1D<TEntity>> _indexes1D = new List<ICacheIndex1D<TEntity>>();
-        readonly List<ICacheIndex2D<TEntity>> _indexes2D = new List<ICacheIndex2D<TEntity>>();
+        readonly List<ICacheIndex<TEntity>> _indexes = new List<ICacheIndex<TEntity>>();
         #endregion
 
         #region ISimpleCache
@@ -28,16 +26,10 @@ namespace SimpleCache
         {
             var cacheIndexFactory = new CacheIndexFactory<TEntity>();
 
-            foreach(var definition in cacheDefinition.Indexes1D)
+            foreach (var definition in cacheDefinition.Indexes)
             {
                 var index = cacheIndexFactory.CreateCacheIndex1D(definition, this);
-                _indexes1D.Add(index);
-            }
-
-            foreach (var definition in cacheDefinition.Indexes2D)
-            {
-                var index = cacheIndexFactory.CreateCacheIndex2D(definition, this);
-                _indexes2D.Add(index);
+                _indexes.Add(index);
             }
         }
 
@@ -52,12 +44,12 @@ namespace SimpleCache
 
         public IEnumerable<TEntity> Items => _items.Values;
 
-        public ICacheIndex1D<TEntity, TIndexOn> Index1D<TIndexOn>(
+        public ICacheIndex<TEntity, TIndexOn> Index1D<TIndexOn>(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty)
         {
             if(firstIndexedProperty == null) throw new ArgumentNullException(nameof(firstIndexedProperty));
 
-            ICacheIndex1D<TEntity, TIndexOn> index = FindIndex(firstIndexedProperty);
+            ICacheIndex<TEntity, TIndexOn> index = FindIndex(firstIndexedProperty);
 
             if (index == null) throw new IndexNotFoundException("Index for this property was not registered!");
 
@@ -72,19 +64,6 @@ namespace SimpleCache
             return FindIndex(firstIndexedProperty) != null;
         }
 
-        public ICacheIndex2D<TEntity,TIndexOnFirst,TIndexOnSecond> Index2D<TIndexOnFirst, TIndexOnSecond>(
-            Expression<Func<TEntity, TIndexOnFirst>> firstIndexedProperty,
-            Expression<Func<TEntity, TIndexOnSecond>> secondIndexedProperty)
-        {
-            if(firstIndexedProperty == null) throw new ArgumentNullException(nameof(firstIndexedProperty));
-            if(secondIndexedProperty==null) throw  new ArgumentNullException(nameof(secondIndexedProperty));
-
-            ICacheIndex2D<TEntity, TIndexOnFirst, TIndexOnSecond> index = FindIndex(firstIndexedProperty, secondIndexedProperty);
-
-            if (index == null) throw new IndexNotFoundException("Index for this property was not registered!");
-
-            return index;
-        }
 
         public void AddOrUpdate(TEntity entity)
         {
@@ -139,7 +118,7 @@ namespace SimpleCache
 
         public void RebuildIndexes()
         {
-            foreach (var cacheIndex in Indexes)
+            foreach (var cacheIndex in _indexes)
             {
                 cacheIndex.Rebuild();
             }
@@ -147,43 +126,20 @@ namespace SimpleCache
 
         public void Clear()
         {
-            foreach (var cacheIndex in Indexes)
+            foreach (var cacheIndex in _indexes)
             {
                 cacheIndex.Clear();
             }
 
             _items.Clear();
         }
-
-        public bool ContainsIndexOn<TIndexOnFirst, TIndexOnSecond>(
-            Expression<Func<TEntity, TIndexOnFirst>> firstIndexedProperty,
-            Expression<Func<TEntity, TIndexOnSecond>> secondIndexedProperty)
-        {
-            return FindIndex(firstIndexedProperty, secondIndexedProperty) != null;
-        }
-
         #endregion
 
         #region Help Methods
-        private IEnumerable<ICacheIndex<TEntity>> Indexes
-        {
-            get
-            {
-                foreach (var index1D in _indexes1D)
-                {
-                    yield return index1D;
-                }
-
-                foreach (var index2D in _indexes2D)
-                {
-                    yield return index2D;
-                }
-            }
-        } 
 
         private void AddToIndexes(TEntity entity)
         {
-            foreach (var cacheIndex in Indexes)
+            foreach (var cacheIndex in _indexes)
             {
                 cacheIndex.AddOrUpdate(entity);
             }
@@ -191,37 +147,23 @@ namespace SimpleCache
 
         private void RemoveFromIndexes(Guid entityId)
         {
-            foreach (var cacheIndex in Indexes)
+            foreach (var cacheIndex in _indexes)
             {
                 cacheIndex.TryRemove(entityId);
             }
         }
 
-        private ICacheIndex1D<TEntity, TIndexOn> FindIndex<TIndexOn>(
+        private ICacheIndex<TEntity, TIndexOn> FindIndex<TIndexOn>(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty)
         {
-           var index = _indexes1D.FirstOrDefault(x => x.IsOnExpression(firstIndexedProperty));
+           var index = _indexes.FirstOrDefault(x => x.IsOnExpression(firstIndexedProperty));
 
             if (index == null)
             {
                 throw new IndexNotFoundException();    
             }
 
-            return index as ICacheIndex1D<TEntity, TIndexOn>;
-        }
-
-        private ICacheIndex2D<TEntity, TIndexOnFirst, TIndexOnSecond> FindIndex<TIndexOnFirst, TIndexOnSecond>(
-            Expression<Func<TEntity, TIndexOnFirst>> firstIndexedProperty,
-            Expression<Func<TEntity, TIndexOnSecond>> secondIndexedProperty)
-        {
-            var index = _indexes2D.FirstOrDefault(x => x.IsOnExpression(firstIndexedProperty, secondIndexedProperty));
-
-            if (index == null)
-            {
-                throw new IndexNotFoundException();
-            }
-
-            return index as ICacheIndex2D<TEntity, TIndexOnFirst, TIndexOnSecond>;
+            return index as ICacheIndex<TEntity, TIndexOn>;
         }
         #endregion
     }
