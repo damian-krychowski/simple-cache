@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace SimpleCache
+namespace SimpleCache.Indexes.OneDimensional
 {
     internal interface ICacheIndex1D<TEntity> : ICacheIndex<TEntity>
         where TEntity : IEntity

@@ -7,6 +7,9 @@ using System.Runtime.Remoting.Messaging;
 using SimpleCache.Builder;
 using SimpleCache.Exceptions;
 using SimpleCache.ExtensionMethods;
+using SimpleCache.Indexes;
+using SimpleCache.Indexes.OneDimensional;
+using SimpleCache.Indexes.TwoDimensional;
 
 namespace SimpleCache
 {

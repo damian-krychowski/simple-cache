@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace SimpleCache
+namespace SimpleCache.Indexes
 {
     internal interface ICacheIndex<TEntity>
         where TEntity : IEntity

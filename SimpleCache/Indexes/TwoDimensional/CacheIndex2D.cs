@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using SimpleCache.ExtensionMethods;
 using SimpleCache.Matrix;
 
-namespace SimpleCache
+namespace SimpleCache.Indexes.TwoDimensional
 {
     internal class CacheIndex2D<TEntity, TIndexedOnFirst, TIndexedOnSecond> :
         ICacheIndex2D<TEntity, TIndexedOnFirst, TIndexedOnSecond>, 

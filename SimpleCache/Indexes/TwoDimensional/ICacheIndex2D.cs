@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace SimpleCache
+namespace SimpleCache.Indexes.TwoDimensional
 {
     internal interface ICacheIndex2D<TEntity> : ICacheIndex<TEntity>
         where TEntity:IEntity

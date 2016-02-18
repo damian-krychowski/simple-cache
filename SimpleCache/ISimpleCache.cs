@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using SimpleCache.Indexes.OneDimensional;
+using SimpleCache.Indexes.TwoDimensional;
 
 namespace SimpleCache
 {
