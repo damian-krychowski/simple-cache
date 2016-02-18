@@ -53,5 +53,7 @@ namespace SimpleCache.Indexes.OneDimensional
             _index.Clear();
             _entitiesWithUndefinedKey.Clear();
         }
+
+        public IEnumerable<TIndexOn> Keys => _index.Keys;
     }
 }

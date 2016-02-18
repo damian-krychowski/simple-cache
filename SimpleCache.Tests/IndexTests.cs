@@ -7,7 +7,7 @@ using SimpleCache.Exceptions;
 namespace SimpleCache.Tests
 {
     [TestFixture]
-    internal class BasicIndexTests
+    internal class IndexTests
     {
         class Dog : IEntity
         {
@@ -24,7 +24,7 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<IndexNotFoundException>(() => sut.Index1D(dog => dog.Breed));
+            Assert.Throws<IndexNotFoundException>(() => sut.Index(dog => dog.Breed));
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace SimpleCache.Tests
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
-            var breedADogs = sut.Index1D(dog => dog.Breed).Get("Breed A");
+            var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
 
             //Assert
             CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, breedADogs);
@@ -72,8 +72,8 @@ namespace SimpleCache.Tests
 
             //Act
             sut.Clear();
-            var breedADogs = sut.Index1D(dog => dog.Breed).Get("Breed A");
-            var breedBDogs = sut.Index1D(dog => dog.Breed).Get("Breed B");
+            var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
+            var breedBDogs = sut.Index(dog => dog.Breed).Get("Breed B");
 
             //Assert
             CollectionAssert.AreEquivalent(Enumerable.Empty<Dog>(), breedADogs);
@@ -93,7 +93,7 @@ namespace SimpleCache.Tests
                 .BuildUp(new[] { dog1, dog2, dog3 });
             
             //Act
-            var breedADogs = sut.Index1D(dog => dog.Breed).Get("Breed A");
+            var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
 
             //Assert
             CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, breedADogs);
@@ -115,8 +115,8 @@ namespace SimpleCache.Tests
             
             //Act
             sut.AddOrUpdate(updatedDog1);
-            var breedADogs = sut.Index1D(dog => dog.Breed).Get("Breed A");
-            var breedCDogs = sut.Index1D(dog => dog.Breed).Get("Breed C");
+            var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
+            var breedCDogs = sut.Index(dog => dog.Breed).Get("Breed C");
 
             //Assert
             CollectionAssert.AreEquivalent(new[] { dog2 }, breedADogs);
@@ -137,7 +137,7 @@ namespace SimpleCache.Tests
 
             //Act
             sut.TryRemove(dog1);
-            var breedADogs = sut.Index1D(dog => dog.Breed).Get("Breed A");
+            var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
 
             //Assert
             CollectionAssert.AreEquivalent(new[] { dog2 }, breedADogs);
@@ -153,7 +153,7 @@ namespace SimpleCache.Tests
 
             //Act & Assert
             Assert.Throws<ArgumentNullException>(
-                () => sut.Index1D<string>(null));
+                () => sut.Index<string>(null));
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace SimpleCache.Tests
 
             //Act & Assert
             Assert.Throws<ArgumentNullException>(
-                () => sut.Index1D(dog => dog.Breed).Get(null).ToArray());
+                () => sut.Index(dog => dog.Breed).Get(null).ToArray());
         }
 
         [Test]
@@ -182,12 +182,12 @@ namespace SimpleCache.Tests
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
-            var initialState = sut.Index1D(dog => dog.Breed).Get("Breed A").ToArray();
+            var initialState = sut.Index(dog => dog.Breed).Get("Breed A").ToArray();
 
             dog1.Breed = "Changed Breed";
             sut.RebuildIndexes();
 
-            var rebuiltState = sut.Index1D(dog => dog.Breed).Get("Breed A").ToArray();
+            var rebuiltState = sut.Index(dog => dog.Breed).Get("Breed A").ToArray();
 
             //Assert
             CollectionAssert.AreEquivalent(new[] { dog1, dog2, dog3 }, initialState);
@@ -207,7 +207,7 @@ namespace SimpleCache.Tests
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
-            var nullBreedDogs = sut.Index1D(dog => dog.Breed).GetWithUndefined();
+            var nullBreedDogs = sut.Index(dog => dog.Breed).GetWithUndefined();
 
             //Assert
             CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, nullBreedDogs);

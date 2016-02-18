@@ -15,13 +15,10 @@ namespace SimpleCache
     internal class SimpleCache<TEntity> : ISimpleCache<TEntity>
         where TEntity : IEntity
     {
-        #region Globals
         readonly ConcurrentDictionary<Guid, TEntity> _items = new ConcurrentDictionary<Guid, TEntity>();
 
         readonly List<ICacheIndex<TEntity>> _indexes = new List<ICacheIndex<TEntity>>();
-        #endregion
 
-        #region ISimpleCache
         public void Initialize(CacheDefinition cacheDefinition)
         {
             var cacheIndexFactory = new CacheIndexFactory<TEntity>();
@@ -44,24 +41,29 @@ namespace SimpleCache
 
         public IEnumerable<TEntity> Items => _items.Values;
 
-        public ICacheIndex<TEntity, TIndexOn> Index1D<TIndexOn>(
-            Expression<Func<TEntity, TIndexOn>> firstIndexedProperty)
+        public ICacheIndex<TEntity, TIndexOn> Index<TIndexOn>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression)
         {
-            if(firstIndexedProperty == null) throw new ArgumentNullException(nameof(firstIndexedProperty));
+            if(indexExpression == null) throw new ArgumentNullException(nameof(indexExpression));
 
-            ICacheIndex<TEntity, TIndexOn> index = FindIndex(firstIndexedProperty);
+            ICacheIndex<TEntity, TIndexOn> index = FindIndex(indexExpression);
 
             if (index == null) throw new IndexNotFoundException("Index for this property was not registered!");
 
             return index;
         }
 
-        public bool ContainsIndexOn<TIndexOn>(
-            Expression<Func<TEntity, TIndexOn>> firstIndexedProperty)
+        public ICacheIndexQuery<TEntity> Query()
         {
-            if(firstIndexedProperty == null) throw  new ArgumentNullException(nameof(firstIndexedProperty));
+            return new CacheIndexQuery<TEntity>(this);
+        }
 
-            return FindIndex(firstIndexedProperty) != null;
+        public bool ContainsIndexOn<TIndexOn>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression)
+        {
+            if(indexExpression == null) throw  new ArgumentNullException(nameof(indexExpression));
+
+            return FindIndex(indexExpression) != null;
         }
 
 
@@ -133,9 +135,6 @@ namespace SimpleCache
 
             _items.Clear();
         }
-        #endregion
-
-        #region Help Methods
 
         private void AddToIndexes(TEntity entity)
         {
@@ -165,6 +164,5 @@ namespace SimpleCache
 
             return index as ICacheIndex<TEntity, TIndexOn>;
         }
-        #endregion
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using SimpleCache.Indexes;
 using SimpleCache.Indexes.OneDimensional;
 
 namespace SimpleCache
@@ -13,10 +14,12 @@ namespace SimpleCache
         IEnumerable<TEntity> Items { get; }
 
         bool ContainsIndexOn<TIndexOn>(
-        Expression<Func<TEntity, TIndexOn>> firstIndexedProperty);
+        Expression<Func<TEntity, TIndexOn>> indexExpression);
 
-        ICacheIndex<TEntity,TIndexOn> Index1D<TIndexOn>(
-            Expression<Func<TEntity, TIndexOn>> firstIndexedProperty);
+        ICacheIndex<TEntity,TIndexOn> Index<TIndexOn>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression);
+
+        ICacheIndexQuery<TEntity> Query();
 
         void AddOrUpdate(TEntity entity);
         void AddOrUpdateRange(IEnumerable<TEntity> entities);

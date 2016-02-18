@@ -6,7 +6,7 @@ using SimpleCache.Builder;
 namespace SimpleCache.Tests
 {
     [TestFixture]
-    class BasicCacheTests
+    class CacheTests
     {
         class Dog : IEntity
         {

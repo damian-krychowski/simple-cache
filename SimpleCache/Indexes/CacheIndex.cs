@@ -67,7 +67,15 @@ namespace SimpleCache.Indexes.OneDimensional
                 yield return _parentCache.GetEntity(entityId);
             }
         }
-        
+
+        public IEnumerable<Guid> GetIds(TIndexOn key)
+        {
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            return _memory.IndexedWithKey(key);
+        }
+
+        public IEnumerable<Guid> GetIdsWithUndefined() => _memory.IndexedWithUndefinedKey;
+
         public void Initialize(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty, 
             ISimpleCache<TEntity> parentCache)
@@ -94,11 +102,13 @@ namespace SimpleCache.Indexes.OneDimensional
             private set;
         }
 
-        public IEnumerable<TEntity> Get(TIndexOn firstIndexedId)
-        {
-            if(firstIndexedId == null) throw  new ArgumentNullException(nameof(firstIndexedId));
+        public IEnumerable<TIndexOn> Keys => _memory.Keys;
 
-            foreach (var entityId in _memory.IndexedWithKey(firstIndexedId))
+        public IEnumerable<TEntity> Get(TIndexOn key)
+        {
+            if(key == null) throw  new ArgumentNullException(nameof(key));
+
+            foreach (var entityId in _memory.IndexedWithKey(key))
             {
                 yield return _parentCache.GetEntity(entityId);
             }

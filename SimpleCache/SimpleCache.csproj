@@ -44,6 +44,7 @@
     <Compile Include="Builder\ICacheIndexDefinition.cs" />
     <Compile Include="Indexes\CacheIndex.cs" />
     <Compile Include="Indexes\IndexationList.cs" />
+    <Compile Include="Indexes\ICacheIndexQuery.cs" />
     <Compile Include="Indexes\IndexMemory.cs" />
     <Compile Include="Indexes\CacheIndexFactory.cs" />
     <Compile Include="Exceptions\IndexNotFoundException.cs" />
