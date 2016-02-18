@@ -14,7 +14,6 @@ namespace SimpleCache
         ICacheIndex2D<TEntity>
         where TEntity : IEntity
     {
-        #region Globals
         readonly ConcurrentDictionary<Guid, Tuple<TIndexedOnFirst, TIndexedOnSecond>> _indexationList = new ConcurrentDictionary<Guid, Tuple<TIndexedOnFirst, TIndexedOnSecond>>(); 
         readonly Matrix<TIndexedOnFirst, TIndexedOnSecond, object> _locks = new Matrix<TIndexedOnFirst, TIndexedOnSecond, object>();
         readonly Matrix<TIndexedOnFirst, TIndexedOnSecond, List<Guid>> _index = new Matrix<TIndexedOnFirst, TIndexedOnSecond, List<Guid>>();
@@ -23,9 +22,8 @@ namespace SimpleCache
         Func<TEntity, TIndexedOnSecond> _secondIndexFunc;
 
         ISimpleCache<TEntity> _parentCache;
-        #endregion
 
-        #region ICacheIndex2D
+
         public bool IsOnExpression(Expression firstIndexedProperty, Expression secondIndexedProperty)
         {
             return firstIndexedProperty.Comapre(FirstPropertyWithIndex) &&
@@ -71,15 +69,34 @@ namespace SimpleCache
             }
         }
 
+        public void Rebuild()
+        {
+            Clear();
+
+            foreach (var entity in _parentCache.Items)
+            {
+                AddOrUpdate(entity);
+            }
+        }
+
+        public void Clear()
+        {
+            _index.Clear();
+            _locks.Clear();
+            _indexationList.Clear();
+        }
+
+        public IEnumerable<TEntity> GetWithUndefined()
+        {
+            throw new NotImplementedException();
+        }
+
         private void RemoveEntity(Guid entityId)
         {
             var indexKeys = _indexationList[entityId];
             _index[indexKeys.Item1, indexKeys.Item2].Remove(entityId);
         }
 
-        #endregion
-
-        #region ICacheIndex2D<TEntity>
         public void Initialize(
             Expression<Func<TEntity, TIndexedOnFirst>> firstIndexedProperty,
             Expression<Func<TEntity, TIndexedOnSecond>> secondIndexedProperty, 
@@ -116,7 +133,9 @@ namespace SimpleCache
 
         public IEnumerable<TEntity> GetFromFirst(TIndexedOnFirst firstIndexedId)
         {
-            IEnumerable<List<Guid>> idsLists = null;
+            if(firstIndexedId == null) throw new ArgumentNullException(nameof(firstIndexedId));
+
+            IEnumerable<List<Guid>> idsLists;
             
             if(_index.TryGetValuesX(firstIndexedId, out idsLists))
             {
@@ -132,7 +151,9 @@ namespace SimpleCache
 
         public IEnumerable<TEntity> GetFromSecond(TIndexedOnSecond secondIndexedId)
         {
-            IEnumerable<List<Guid>> idsLists = null;
+            if(secondIndexedId == null) throw new ArgumentNullException(nameof(secondIndexedId));
+
+            IEnumerable<List<Guid>> idsLists;
 
             if (_index.TryGetValuesY(secondIndexedId, out idsLists))
             {
@@ -148,7 +169,10 @@ namespace SimpleCache
 
         public IEnumerable<TEntity> Get(TIndexedOnFirst firstIndexedId, TIndexedOnSecond secondIndexedId)
         {
-            List<Guid> idsList = null;
+            if(firstIndexedId == null) throw new ArgumentNullException(nameof(firstIndexedId));
+            if(secondIndexedId == null) throw new ArgumentNullException(nameof(secondIndexedId));
+
+            List<Guid> idsList;
 
             if (_index.TryGetValue(firstIndexedId, secondIndexedId, out idsList))
             {
@@ -158,9 +182,26 @@ namespace SimpleCache
                 }
             }
         }
-        #endregion
 
-        #region Help Methods
+        public IEnumerable<TEntity> GetWithFirstUndefined(TIndexedOnSecond secondIndexedId)
+        {
+            if(secondIndexedId == null) throw new ArgumentNullException(nameof(secondIndexedId));
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<TEntity> GetWithSecondUndefined(TIndexedOnFirst firstIndexedId)
+        {
+            if(firstIndexedId == null) throw new ArgumentNullException(nameof(firstIndexedId));
+
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<TEntity> GetWithBothUndefined()
+        {
+            throw new NotImplementedException();
+        }
+
+
         private List<Guid> GetIndexList(TIndexedOnFirst indexKeyX, TIndexedOnSecond indexKeyY)
         {
             if (!_index.ContainsXY(indexKeyX, indexKeyY))
@@ -186,6 +227,5 @@ namespace SimpleCache
                 indexList.Add(itemId);
             }
         }
-        #endregion
     }
 }

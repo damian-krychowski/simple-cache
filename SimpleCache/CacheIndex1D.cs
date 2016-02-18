@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,26 +8,95 @@ using SimpleCache.ExtensionMethods;
 
 namespace SimpleCache
 {
+    internal class IndexationList
+    {
+        readonly ConcurrentDictionary<Guid, IList<Guid>> _indexationList = new ConcurrentDictionary<Guid, IList<Guid>>();
+
+        public bool WasIndexed(Guid id)
+        {
+            return _indexationList.ContainsKey(id);
+        }
+
+        public void MarkIndexation(Guid id, IList<Guid> collection)
+        {
+            _indexationList.AddOrUpdate(id, collection, (k, v) => collection);
+        }
+
+        public void RemoveFromLookupAndMemory(Guid id)
+        {
+            IList<Guid> collection;
+
+            if (_indexationList.TryRemove(id, out collection))
+            {
+                collection.Remove(id);
+            }
+        }
+    }
+
 
     internal class CacheIndex1D<TEntity, TIndexOn> : 
         ICacheIndex1D<TEntity, TIndexOn>, 
         ICacheIndex1D<TEntity>
         where TEntity : IEntity
     {
-        #region Globals
+        private class IndexMemory
+        {
+            readonly IndexationList _indexationList = new IndexationList();
+            readonly List<Guid> _entitiesWithUndefinedKey = new List<Guid>(); 
+            readonly ConcurrentDictionary<TIndexOn, List<Guid>> _index = new ConcurrentDictionary<TIndexOn, List<Guid>>();
+
+            public bool WasIndexed(Guid id)
+            {
+                return _indexationList.WasIndexed(id);
+            }
+
+            public void InsertWithUndefinedKey(Guid id)
+            {
+               _entitiesWithUndefinedKey.Add(id);
+               _indexationList.MarkIndexation(id, _entitiesWithUndefinedKey);
+            }
+
+            public IEnumerable<Guid> IndexedWithUndefinedKey()
+            {
+                return _entitiesWithUndefinedKey;
+            } 
+
+            public void Insert(Guid id, TIndexOn key)
+            {
+                List<Guid> indexList = GetIndexList(key);
+                indexList.Add(id);
+                _indexationList.MarkIndexation(id, indexList);
+            }
+
+            private List<Guid> GetIndexList(TIndexOn key)
+            {
+                if (!_index.ContainsKey(key))
+                {
+                    _index.TryAdd(key, new List<Guid>());
+                }
+
+                return _index[key];
+            }
+
+            public IEnumerable<Guid> IndexedWithKey(TIndexOn key)
+            {
+                if(!_index.ContainsKey(key)) throw new InvalidOperationException($"Items with {key} key were not stored.");
+                return _index[key];
+            } 
+            
+            public void RemoveIfStored(Guid id)
+            {
+                _indexationList.RemoveFromLookupAndMemory(id);
+            }
+        }
+
+        readonly List<Guid> _withUndefinedIndexingValue = new List<Guid>(); 
         readonly ConcurrentDictionary<Guid, TIndexOn> _indexationList = new ConcurrentDictionary<Guid, TIndexOn>(); 
         readonly ConcurrentDictionary<TIndexOn, List<Guid>> _index = new ConcurrentDictionary<TIndexOn, List<Guid>>();
-        readonly ConcurrentDictionary<TIndexOn, object> _locks = new ConcurrentDictionary<TIndexOn, object>();
 
         Func<TEntity, TIndexOn> _indexFunc;
         ISimpleCache<TEntity> _parentCache;
-        Func<TEntity, bool> _indexedItems;
-        #endregion
 
-        #region Constructors
-        #endregion
-
-        #region ICacheIndex1D
         public bool IsOnExpression(Expression firstIndexedProperty)
         {
             return firstIndexedProperty.Comapre(FirstPropertyWithIndex);
@@ -56,6 +126,10 @@ namespace SimpleCache
                     AddItemToIndex(indexKey, entity.Id);
                 }
             }
+            else
+            {
+                _withUndefinedIndexingValue.Add(entity.Id);
+            }
         }
 
         public void TryRemove(TEntity entity)
@@ -72,19 +146,33 @@ namespace SimpleCache
             }
         }
 
-        private void RemoveEntity(Guid entityId)
+        public void Rebuild()
         {
-            var indexKey = _indexationList[entityId];
+            Clear();
 
-            lock (_locks[indexKey])
+            foreach (var entity in _parentCache.Items)
             {
-                _index[indexKey].Remove(entityId);
+                AddOrUpdate(entity);
             }
         }
 
-        #endregion
+        public void Clear()
+        {
+            _index.Clear();
+            _indexationList.Clear();
+        }
 
-        #region ICacheIndex1D<TEntity>
+        public IEnumerable<TEntity> GetWithUndefined()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RemoveEntity(Guid entityId)
+        {
+            var indexKey = _indexationList[entityId];
+            _index[indexKey].Remove(entityId);            
+        }
+
         public void Initialize(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty, 
             ISimpleCache<TEntity> parentCache)
@@ -113,19 +201,19 @@ namespace SimpleCache
 
         public IEnumerable<TEntity> Get(TIndexOn firstIndexedId)
         {
-            return GetIndexList(firstIndexedId)
-                .Select(itemId => _parentCache.GetEntity(itemId));
+            if(firstIndexedId == null) throw  new ArgumentNullException(nameof(firstIndexedId));
+
+            foreach (var entityId in GetIndexList(firstIndexedId))
+            {
+                yield return _parentCache.GetEntity(entityId);
+            }
         }
 
-        #endregion
-
-        #region Help Methods
         private List<Guid> GetIndexList(TIndexOn indexKey)
         {
             if (!_index.ContainsKey(indexKey))
             {
                 _index.TryAdd(indexKey, new List<Guid>());
-                _locks.TryAdd(indexKey, new object());
             }
 
             return _index[indexKey];
@@ -135,12 +223,7 @@ namespace SimpleCache
         {
             List<Guid> indexList = GetIndexList(indexKey);
             _indexationList.AddOrUpdate(itemId, indexKey, (k, v) => indexKey);
-
-            lock (_locks[indexKey])
-            {
-                indexList.Add(itemId);
-            }
+            indexList.Add(itemId);
         }
-        #endregion
     }
 }

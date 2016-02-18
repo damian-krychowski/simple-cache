@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace SimpleCache.Builder
@@ -14,5 +15,6 @@ namespace SimpleCache.Builder
             Expression<Func<TEntity, TInxedOnSecond>> indexSecondDimension);  
      
         ISimpleCache<TEntity> BuildUp();
+        ISimpleCache<TEntity> BuildUp(IEnumerable<TEntity> entities);
     }
 }

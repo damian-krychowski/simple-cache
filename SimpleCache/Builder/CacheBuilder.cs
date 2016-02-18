@@ -62,6 +62,22 @@ namespace SimpleCache.Builder
 
             return cache;
         }
+
+        public ISimpleCache<TEntity> BuildUp(IEnumerable<TEntity> entities)
+        {
+            SimpleCache<TEntity> cache = new SimpleCache<TEntity>();
+
+            cache.Initialize(new CacheDefinition()
+            {
+                Indexes1D = _index1DDefinitions,
+                Indexes2D = _index2DDefinitions,
+            });
+
+            cache.AddOrUpdateRange(entities);
+
+            return cache;
+        }
+
         #endregion
     }
 }

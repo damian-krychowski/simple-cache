@@ -18,5 +18,8 @@ namespace SimpleCache
         IEnumerable<TEntity> GetFromFirst(TIndexedOnFirst firstIndexedId);
         IEnumerable<TEntity> GetFromSecond(TIndexedOnSecond secondIndexedId);
         IEnumerable<TEntity> Get(TIndexedOnFirst firstIndexedId, TIndexedOnSecond secondIndexedId);
+        IEnumerable<TEntity> GetWithFirstUndefined(TIndexedOnSecond secondIndexedId);
+        IEnumerable<TEntity> GetWithSecondUndefined(TIndexedOnFirst firstIndexedId);
+        IEnumerable<TEntity> GetWithBothUndefined();
     }
 }

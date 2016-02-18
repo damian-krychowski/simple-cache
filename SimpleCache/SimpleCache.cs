@@ -52,6 +52,8 @@ namespace SimpleCache
         public ICacheIndex1D<TEntity, TIndexOn> Index1D<TIndexOn>(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty)
         {
+            if(firstIndexedProperty == null) throw new ArgumentNullException(nameof(firstIndexedProperty));
+
             ICacheIndex1D<TEntity, TIndexOn> index = FindIndex(firstIndexedProperty);
 
             if (index == null) throw new IndexNotFoundException("Index for this property was not registered!");
@@ -62,6 +64,8 @@ namespace SimpleCache
         public bool ContainsIndexOn<TIndexOn>(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty)
         {
+            if(firstIndexedProperty == null) throw  new ArgumentNullException(nameof(firstIndexedProperty));
+
             return FindIndex(firstIndexedProperty) != null;
         }
 
@@ -69,6 +73,9 @@ namespace SimpleCache
             Expression<Func<TEntity, TIndexOnFirst>> firstIndexedProperty,
             Expression<Func<TEntity, TIndexOnSecond>> secondIndexedProperty)
         {
+            if(firstIndexedProperty == null) throw new ArgumentNullException(nameof(firstIndexedProperty));
+            if(secondIndexedProperty==null) throw  new ArgumentNullException(nameof(secondIndexedProperty));
+
             ICacheIndex2D<TEntity, TIndexOnFirst, TIndexOnSecond> index = FindIndex(firstIndexedProperty, secondIndexedProperty);
 
             if (index == null) throw new IndexNotFoundException("Index for this property was not registered!");
@@ -129,7 +136,20 @@ namespace SimpleCache
 
         public void RebuildIndexes()
         {
-            throw new NotImplementedException();
+            foreach (var cacheIndex in Indexes)
+            {
+                cacheIndex.Rebuild();
+            }
+        }
+
+        public void Clear()
+        {
+            foreach (var cacheIndex in Indexes)
+            {
+                cacheIndex.Clear();
+            }
+
+            _items.Clear();
         }
 
         public bool ContainsIndexOn<TIndexOnFirst, TIndexOnSecond>(
@@ -142,29 +162,35 @@ namespace SimpleCache
         #endregion
 
         #region Help Methods
+        private IEnumerable<ICacheIndex<TEntity>> Indexes
+        {
+            get
+            {
+                foreach (var index1D in _indexes1D)
+                {
+                    yield return index1D;
+                }
+
+                foreach (var index2D in _indexes2D)
+                {
+                    yield return index2D;
+                }
+            }
+        } 
+
         private void AddToIndexes(TEntity entity)
         {
-            foreach (var index in _indexes1D)
+            foreach (var cacheIndex in Indexes)
             {
-                index.AddOrUpdate(entity);
-            }
-
-            foreach (var index in _indexes2D)
-            {
-                index.AddOrUpdate(entity);
+                cacheIndex.AddOrUpdate(entity);
             }
         }
 
         private void RemoveFromIndexes(Guid entityId)
         {
-            foreach (var index in _indexes1D)
+            foreach (var cacheIndex in Indexes)
             {
-                index.TryRemove(entityId);
-            }
-
-            foreach (var index in _indexes2D)
-            {
-                index.TryRemove(entityId);
+                cacheIndex.TryRemove(entityId);
             }
         }
 
