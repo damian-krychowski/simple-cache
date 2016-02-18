@@ -8,7 +8,6 @@ using SimpleCache.Builder;
 using SimpleCache.Exceptions;
 using SimpleCache.ExtensionMethods;
 using SimpleCache.Indexes;
-using SimpleCache.Indexes.OneDimensional;
 
 namespace SimpleCache
 {

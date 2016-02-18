@@ -252,7 +252,7 @@ namespace SimpleCache.Tests
             //Arrange
             var aLotOfTeachers = new List<Teacher>();
 
-            for (int i = 0; i < 500000; i++)
+            for (int i = 0; i < 50000; i++)
             {
                 aLotOfTeachers.Add(new Teacher(null, "Arthur", 25, Sex.Male));
                 aLotOfTeachers.Add(new Teacher("Mathematics", "Tom", 35, Sex.Male));
@@ -310,7 +310,7 @@ namespace SimpleCache.Tests
             //Arrange
             var aLotOfTeachers = new List<Teacher>();
 
-            for (int i = 0; i < 500000; i++)
+            for (int i = 0; i < 50000; i++)
             {
                 aLotOfTeachers.Add(new Teacher(null, "Arthur", 25, Sex.Male));
                 aLotOfTeachers.Add(new Teacher("Mathematics", "Tom", 35, Sex.Male));

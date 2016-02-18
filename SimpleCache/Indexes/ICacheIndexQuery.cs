@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using SimpleCache.Exceptions;
-using SimpleCache.Indexes.OneDimensional;
 
 namespace SimpleCache.Indexes
 {

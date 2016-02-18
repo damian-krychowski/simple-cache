@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace SimpleCache.Indexes.OneDimensional
+namespace SimpleCache.Indexes
 {
     internal interface ICacheIndex<TEntity>
         where TEntity : IEntity

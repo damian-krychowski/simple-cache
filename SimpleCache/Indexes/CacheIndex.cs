@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using SimpleCache.ExtensionMethods;
 
-namespace SimpleCache.Indexes.OneDimensional
+namespace SimpleCache.Indexes
 {
     internal class CacheIndex<TEntity, TIndexOn> : 
         ICacheIndex<TEntity, TIndexOn>, 

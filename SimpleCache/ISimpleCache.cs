@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SimpleCache.Indexes;
-using SimpleCache.Indexes.OneDimensional;
 
 namespace SimpleCache
 {

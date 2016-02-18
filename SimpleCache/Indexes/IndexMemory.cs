@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SimpleCache.Indexes.OneDimensional
+namespace SimpleCache.Indexes
 {
     internal class IndexMemory<TIndexOn>
     {

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using SimpleCache.Builder;
-using SimpleCache.Indexes.OneDimensional;
 
 namespace SimpleCache.Indexes
 {
