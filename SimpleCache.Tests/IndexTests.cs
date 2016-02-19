@@ -136,7 +136,7 @@ namespace SimpleCache.Tests
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
-            sut.TryRemove(dog1);
+            sut.Remove(dog1.Id);
             var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
 
             //Assert

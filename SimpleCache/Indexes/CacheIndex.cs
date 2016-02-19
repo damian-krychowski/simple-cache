@@ -13,12 +13,12 @@ namespace SimpleCache.Indexes
     {
         private readonly IndexMemory<TEntity, TIndexOn> _memory = new IndexMemory<TEntity, TIndexOn>();
 
-        Func<TEntity, TIndexOn> _indexFunc;
-        ISimpleCache<TEntity> _parentCache;
+        private Func<TEntity, TIndexOn> _indexFunc;
+        private ISimpleCache<TEntity> _parentCache;
 
         public bool IsOnExpression(Expression indexExpression)
         {
-            return indexExpression.Comapre(FirstPropertyWithIndex);
+            return indexExpression.Comapre(IndexExpression);
         }
 
         public void AddOrUpdate(TEntity entity)
@@ -61,18 +61,7 @@ namespace SimpleCache.Indexes
 
         public void Clear() => _memory.Clear();
 
-        public IEnumerable<TEntity> GetWithUndefined()
-        {
-            return _memory.IndexedWithUndefinedKey;
-        }
-
-        public IEnumerable<Guid> GetIds(TIndexOn key)
-        {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            return _memory.IndexedWithKey(key).Select(entity=>entity.Id);
-        }
-
-        public IEnumerable<Guid> GetIdsWithUndefined() => _memory.IndexedWithUndefinedKey.Select(entity=>entity.Id);
+        public IEnumerable<TEntity> GetWithUndefined() => _memory.IndexedWithUndefinedKey;
 
         public void Initialize(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty, 
@@ -82,19 +71,19 @@ namespace SimpleCache.Indexes
             if (parentCache == null) throw new ArgumentNullException(nameof(parentCache));
 
             _indexFunc = firstIndexedProperty.Compile();
-            FirstPropertyWithIndex = firstIndexedProperty;
+            IndexExpression = firstIndexedProperty;
             _parentCache = parentCache;
         }
 
         public void BuildUp(IEnumerable<TEntity> entities)
         {
-            foreach(TEntity entity in entities)
+            foreach(var entity in entities)
             {
                 AddOrUpdate(entity);
             }
         }
 
-        public Expression<Func<TEntity, TIndexOn>> FirstPropertyWithIndex
+        public Expression<Func<TEntity, TIndexOn>> IndexExpression
         {
             get;
             private set;

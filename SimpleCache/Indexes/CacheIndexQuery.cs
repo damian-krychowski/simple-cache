@@ -16,10 +16,10 @@ namespace SimpleCache.Indexes
             _parentCache = parentCache;
         }
 
-        public ICacheIndexQuery<TEntity> WhereUndefined<TIndexOn>(Expression<Func<TEntity, TIndexOn>> indexSelector)
+        public ICacheIndexQuery<TEntity> WhereUndefined<TIndexOn>(Expression<Func<TEntity, TIndexOn>> indexExpression)
         {
             var entities = _parentCache
-                .Index(indexSelector)
+                .Index(indexExpression)
                 .GetWithUndefined();
 
             Hash(entities);
@@ -27,11 +27,11 @@ namespace SimpleCache.Indexes
             return this;
         }
 
-        public ICacheIndexQuery<TEntity> Where<TIndexOn>(Expression<Func<TEntity, TIndexOn>> indexSelector, Func<TIndexOn, bool> valueCondition)
+        public ICacheIndexQuery<TEntity> Where<TIndexOn>(Expression<Func<TEntity, TIndexOn>> indexExpression, Func<TIndexOn, bool> valueCondition)
         {
             if (valueCondition == null) throw new ArgumentNullException(nameof(valueCondition));
 
-            var index = _parentCache.Index(indexSelector);
+            var index = _parentCache.Index(indexExpression);
 
             var acceptedKeys = index.Keys
                 .Where(valueCondition);

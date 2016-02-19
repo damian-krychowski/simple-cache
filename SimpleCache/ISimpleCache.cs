@@ -5,10 +5,11 @@ using SimpleCache.Indexes;
 
 namespace SimpleCache
 {
-
     public interface ISimpleCache<TEntity> where TEntity : IEntity
     {
         TEntity GetEntity(Guid id);
+        bool TryGetEntity(Guid id, out TEntity entity);
+        bool ContainsEntity(Guid id);
 
         IEnumerable<TEntity> Items { get; }
 
@@ -23,11 +24,7 @@ namespace SimpleCache
         void AddOrUpdate(TEntity entity);
         void AddOrUpdateRange(IEnumerable<TEntity> entities);
 
-        void TryRemove(TEntity entity);
-        void TryRemove(Guid entityId);
-
-        void TryRemoveRange(IEnumerable<TEntity> entities);
-        void TryRemoveRange(IEnumerable<Guid> entitiesIds);
+        void Remove(Guid id);
 
         void RebuildIndexes();
         void Clear();

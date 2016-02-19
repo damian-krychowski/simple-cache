@@ -7,7 +7,7 @@ namespace SimpleCache.Indexes
     internal class IndexationList<TEntity>
         where TEntity:IEntity
     {
-        readonly Dictionary<Guid, List<TEntity>> _indexationList = new Dictionary<Guid, List<TEntity>>();
+        private readonly Dictionary<Guid, List<TEntity>> _indexationList = new Dictionary<Guid, List<TEntity>>();
 
         public void MarkIndexation(Guid id, List<TEntity> collection)
         {

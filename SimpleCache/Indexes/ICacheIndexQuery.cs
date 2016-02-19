@@ -9,10 +9,10 @@ namespace SimpleCache.Indexes
     public interface ICacheIndexQuery<TEntity>
         where TEntity : IEntity
     {
-        ICacheIndexQuery<TEntity> WhereUndefined<TIndexOn>(Expression<Func<TEntity, TIndexOn>> indexSelector);
+        ICacheIndexQuery<TEntity> WhereUndefined<TIndexOn>(Expression<Func<TEntity, TIndexOn>> indexExpression);
 
         ICacheIndexQuery<TEntity> Where<TIndexOn>(
-            Expression<Func<TEntity, TIndexOn>> indexSelector, Func<TIndexOn, bool> valueCondition);
+            Expression<Func<TEntity, TIndexOn>> indexExpression, Func<TIndexOn, bool> valueCondition);
 
         List<TEntity> ToList();
         int Count();

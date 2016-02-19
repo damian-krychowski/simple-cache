@@ -23,8 +23,5 @@ namespace SimpleCache.Indexes
 
         IEnumerable<TEntity> Get(TIndexedOn key);
         IEnumerable<TEntity> GetWithUndefined();
-
-        IEnumerable<Guid> GetIds(TIndexedOn key);
-        IEnumerable<Guid> GetIdsWithUndefined();
     }
 }
