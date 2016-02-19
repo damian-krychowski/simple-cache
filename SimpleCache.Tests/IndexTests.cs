@@ -11,9 +11,31 @@ namespace SimpleCache.Tests
     {
         class Dog : IEntity
         {
-            public Guid Id { get; set; }
+            public Guid Id { get; }
             public string Name { get; set; }
             public string Breed { get; set; }
+            public int Age { get; set; }
+
+            public Dog()
+            {
+                Id = Guid.NewGuid();
+            }
+
+            public Dog(Guid id)
+            {
+                Id = id;
+            }
+        }
+
+        class Cat : IEntity
+        {
+            public Guid Id { get;  }
+            public Dog WorstEnemy { get; set; }
+
+            public Cat()
+            {
+                Id = Guid.NewGuid();
+            }
         }
 
         [Test]
@@ -41,7 +63,7 @@ namespace SimpleCache.Tests
 
 
         [Test]
-        public void Should_throw_when_index_expression_for_contains_index_on_methods_is_null()
+        public void Should_throw_when_index_expression_for_contains_index_on_method_is_null()
         {
             //Arrange
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
@@ -55,9 +77,9 @@ namespace SimpleCache.Tests
         public void Can_build_up_with_some_entities()
         {
             //Arrange
-            var dog1 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
+            var dog1 = new Dog { Breed = "Breed A", Name = "Tony" };
+            var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
+            var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
             //Act
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
@@ -74,9 +96,9 @@ namespace SimpleCache.Tests
         public void Can_clear()
         {
             //Arrange
-            var dog1 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
+            var dog1 = new Dog { Breed = "Breed A", Name = "Tony" };
+            var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
+            var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                .WithIndex(dog => dog.Breed)
@@ -96,9 +118,9 @@ namespace SimpleCache.Tests
         public void Can_get_entities_with_index()
         {
             //Arrange
-            var dog1 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
+            var dog1 = new Dog { Breed = "Breed A", Name = "Tony" };
+            var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
+            var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                 .WithIndex(dog => dog.Breed)
@@ -115,15 +137,15 @@ namespace SimpleCache.Tests
         public void Can_index_be_updated()
         {
             //Arrange
-            var dog1 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
+            var dog1 = new Dog { Breed = "Breed A", Name = "Tony" };
+            var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
+            var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
-            var updatedDog1 = new Dog { Id = dog1.Id, Breed = "Breed C", Name = "Tony" };
+            var updatedDog1 = new Dog(dog1.Id) {Breed = "Breed C", Name = "Tony"};
             
             //Act
             sut.AddOrUpdate(updatedDog1);
@@ -139,9 +161,9 @@ namespace SimpleCache.Tests
         public void Can_item_be_removed_from_index()
         {
             //Arrange
-            var dog1 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed B", Name = "John" };
+            var dog1 = new Dog { Breed = "Breed A", Name = "Tony" };
+            var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
+            var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                 .WithIndex(dog => dog.Breed)
@@ -185,9 +207,9 @@ namespace SimpleCache.Tests
         public void Can_index_be_rebuilt()
         {
             //Arrange
-            var dog1 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "John" };
+            var dog1 = new Dog { Breed = "Breed A", Name = "Tony" };
+            var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
+            var dog3 = new Dog { Breed = "Breed A", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                 .WithIndex(dog => dog.Breed)
@@ -210,9 +232,9 @@ namespace SimpleCache.Tests
         public void Can_index_get_with_undefined_indexing_values()
         {
             //Arrange
-            var dog1 = new Dog { Id = Guid.NewGuid(), Breed = null, Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Breed = null, Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Breed = "Breed A", Name = "John" };
+            var dog1 = new Dog { Breed = null, Name = "Tony" };
+            var dog2 = new Dog { Breed = null, Name = "Andrew" };
+            var dog3 = new Dog { Breed = "Breed A", Name = "John" };
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                 .WithIndex(dog => dog.Breed)
@@ -224,5 +246,62 @@ namespace SimpleCache.Tests
             //Assert
             CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, nullBreedDogs);
         }
-   }
+
+        [Test]
+        public void Can_undefined_indexing_values_be_detected_for_deeper_index()
+        {
+            //Arrange
+            var cat1 = new Cat {WorstEnemy = new Dog {Breed = "Breed A", Name = "Tony"}};
+            var cat2 = new Cat {WorstEnemy = new Dog {Breed = null, Name = "Andrew"}};
+            var cat3 = new Cat {WorstEnemy = null};
+
+            var sut = CacheBuilderFactory.CreateCacheBuilder<Cat>()
+                .WithIndex(cat => cat.WorstEnemy.Breed)
+                .BuildUp(new[] {cat1, cat2, cat3});
+
+            //Act
+            var result = sut.Index(cat => cat.WorstEnemy.Breed).GetWithUndefined();
+
+            //Assert
+            CollectionAssert.AreEquivalent(new[] {cat2, cat3}, result);
+        }
+
+        [Test]
+        public void Can_index_with_non_nullable_type_values()
+        {
+            //Arrange
+            var dog1 = new Dog { Age = 1 };
+            var dog2 = new Dog { Age = 1 };
+            var dog3 = new Dog { Age = 2 };
+
+            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+                .WithIndex(dog => dog.Age)
+                .BuildUp(new[] { dog1, dog2, dog3 });
+
+            //Act
+            var result = sut.Index(dog => dog.Age).Get(1);
+
+            //Assert
+            CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, result);
+        }
+
+        [Test]
+        public void Can_undefined_non_nullable_indexing_values_be_detected_for_deeper_index()
+        {
+            //Arrange
+            var cat1 = new Cat { WorstEnemy = new Dog { Age = 1 } };
+            var cat2 = new Cat { WorstEnemy = new Dog() };
+            var cat3 = new Cat { WorstEnemy = null };
+
+            var sut = CacheBuilderFactory.CreateCacheBuilder<Cat>()
+                .WithIndex(cat => cat.WorstEnemy.Age)
+                .BuildUp(new[] { cat1, cat2, cat3 });
+
+            //Act
+            var result = sut.Index(cat => cat.WorstEnemy.Age).GetWithUndefined();
+
+            //Assert
+            CollectionAssert.AreEquivalent(new[] { cat3 }, result);
+        }
+    }
 }

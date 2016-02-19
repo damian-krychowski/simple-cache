@@ -139,57 +139,5 @@ namespace SimpleCache.Tests
                 .Where(t => t.ResponsibleForClasses, null)
                 .ToList());
         }
-
-    
-        [Explicit]
-        [Test]
-        public void Should_query_faster_for_defined_indexes_than_for_linq_query()
-        {
-            //Arrange
-            var aLotOfTeachers = new List<Teacher>();
-
-            for (int i = 0; i < 500000; i++)
-            {
-                aLotOfTeachers.Add(new Teacher(null, "Arthur", 25, Sex.Male));
-                aLotOfTeachers.Add(new Teacher("Mathematics", "Tom", 35, Sex.Male));
-                aLotOfTeachers.Add(new Teacher("English", "Andrew", 35, Sex.Male));
-                aLotOfTeachers.Add(new Teacher("English", "Bob", 45, Sex.Male));
-                aLotOfTeachers.Add(new Teacher(null, "John", 55, Sex.Male));
-                aLotOfTeachers.Add(new Teacher("Mathematics", "Jessica", 25, Sex.Female));
-                aLotOfTeachers.Add(new Teacher("Mathematics", "Andrea", 35, Sex.Female));
-                aLotOfTeachers.Add(new Teacher(null, "Kate", 35, Sex.Female));
-                aLotOfTeachers.Add(new Teacher("English", "Sandra", 45, Sex.Female));
-                aLotOfTeachers.Add(new Teacher("Biology", "Lara", 55, Sex.Female));
-            }
-
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Teacher>()
-                .WithIndex(teacher => teacher.ResponsibleForClasses)
-                .WithIndex(teacher => teacher.Age)
-                .BuildUp(aLotOfTeachers);
-
-            //Act
-
-            var indexedStartTime = DateTime.Now;
-
-            var indexedResult = sut
-                .Query()
-                .Where(t => t.Age, age => age > 30)
-                .Where(t => t.ResponsibleForClasses, classes => classes == "English")
-                .ToList();
-
-            var indexedLenght = DateTime.Now - indexedStartTime;
-
-            var linqStartTime = DateTime.Now;
-
-            var linqResult = aLotOfTeachers
-                .Where(t => t.Age > 30)
-                .Where(t => t.ResponsibleForClasses == "English")
-                .ToList();
-           
-            var linqLenght = DateTime.Now - linqStartTime;
-
-            //Assert
-            Assert.That(indexedLenght, Is.LessThan(linqLenght));
-        }
     }
 }

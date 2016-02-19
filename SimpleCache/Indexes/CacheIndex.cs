@@ -23,17 +23,17 @@ namespace SimpleCache.Indexes
 
         public void AddOrUpdate(TEntity entity)
         {
-            var indexKey = _indexFunc(entity);
+            var indexKey = IndexKey<TEntity, TIndexOn>.Determine(_indexFunc, entity);
 
             _memory.RemoveIfStored(entity.Id);
 
-            if (indexKey == null)
+            if (indexKey.Defined)
             {
-                _memory.InsertWithUndefinedKey(entity);
+                _memory.Insert(entity, indexKey.Value);
             }
             else
             {
-                _memory.Insert(entity, indexKey);
+                _memory.InsertWithUndefinedKey(entity);
             }
         }
 
