@@ -11,10 +11,10 @@ using SimpleCache.Indexes;
 
 namespace SimpleCache
 {
-    internal class SimpleCache<TEntity> : ISimpleCacheInternal<TEntity>
+    internal class SimpleCache<TEntity> : ISimpleCache<TEntity>
         where TEntity : IEntity
     {
-        readonly ConcurrentDictionary<Guid, TEntity> _items = new ConcurrentDictionary<Guid, TEntity>();
+        readonly Dictionary<Guid, TEntity> _items = new Dictionary<Guid, TEntity>();
 
         readonly List<ICacheIndex<TEntity>> _indexes = new List<ICacheIndex<TEntity>>();
 
@@ -45,7 +45,7 @@ namespace SimpleCache
         {
             if(indexExpression == null) throw new ArgumentNullException(nameof(indexExpression));
 
-            ICacheIndex<TEntity, TIndexOn> index = FindIndex(indexExpression);
+            var index = FindIndex(indexExpression);
 
             if (index == null) throw new IndexNotFoundException($"Index {indexExpression} was not registered!");
 
@@ -70,7 +70,7 @@ namespace SimpleCache
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-            _items.AddOrUpdate(entity.Id, entity, (k, v) => entity);
+            _items[entity.Id] = entity;
             AddToIndexes(entity);
         }
 
@@ -92,8 +92,7 @@ namespace SimpleCache
 
         public void TryRemove(Guid entityId)
         {
-            TEntity entity;
-            _items.TryRemove(entityId, out entity);
+            _items.Remove(entityId);
             RemoveFromIndexes(entityId);
         }
 
@@ -162,20 +161,6 @@ namespace SimpleCache
             }
 
             return index as ICacheIndex<TEntity, TIndexOn>;
-        }
-
-        public ICacheIndex<TEntity, TIndexOn> CreateTemporaryIndex<TIndexOn>
-            (Expression<Func<TEntity, TIndexOn>> indexExpression)
-        {
-            var temporaryIndex = new CacheIndex<TEntity,TIndexOn>();
-            temporaryIndex.Initialize(indexExpression, this);
-            
-            foreach (var entity in _items.Values)
-            {
-                temporaryIndex.AddOrUpdate(entity);
-            }
-
-            return temporaryIndex;
         }
     }
 }

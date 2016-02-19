@@ -43,6 +43,7 @@
     <Compile Include="Builder\CacheBuilderFactory.cs" />
     <Compile Include="Builder\ICacheIndexDefinition.cs" />
     <Compile Include="Indexes\CacheIndex.cs" />
+    <Compile Include="Indexes\CacheIndexQuery.cs" />
     <Compile Include="Indexes\IndexationList.cs" />
     <Compile Include="Indexes\ICacheIndexQuery.cs" />
     <Compile Include="Indexes\IndexMemory.cs" />

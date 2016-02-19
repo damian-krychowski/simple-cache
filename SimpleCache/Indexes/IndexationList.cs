@@ -4,22 +4,24 @@ using System.Collections.Generic;
 
 namespace SimpleCache.Indexes
 {
-    internal class IndexationList
+    internal class IndexationList<TEntity>
+        where TEntity:IEntity
     {
-        readonly ConcurrentDictionary<Guid, IList<Guid>> _indexationList = new ConcurrentDictionary<Guid, IList<Guid>>();
+        readonly Dictionary<Guid, List<TEntity>> _indexationList = new Dictionary<Guid, List<TEntity>>();
 
-        public void MarkIndexation(Guid id, IList<Guid> collection)
+        public void MarkIndexation(Guid id, List<TEntity> collection)
         {
-            _indexationList.AddOrUpdate(id, collection, (k, v) => collection);
+            _indexationList.Add(id, collection);
         }
 
         public void RemoveFromLookupAndMemory(Guid id)
         {
-            IList<Guid> collection;
+            List<TEntity> list;
 
-            if (_indexationList.TryRemove(id, out collection))
+            if (_indexationList.TryGetValue(id, out list))
             {
-                collection.Remove(id);
+                list.RemoveAll(entity => entity.Id == id);
+                _indexationList.Remove(id);
             }
         }
 

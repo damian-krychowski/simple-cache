@@ -5,40 +5,47 @@ using System.Linq;
 
 namespace SimpleCache.Indexes
 {
-    internal class IndexMemory<TIndexOn>
+    internal class IndexMemory<TEntity,TIndexOn>
+        where TEntity : IEntity
     {
-        readonly IndexationList _indexationList = new IndexationList();
-        readonly List<Guid> _entitiesWithUndefinedKey = new List<Guid>();
-        readonly ConcurrentDictionary<TIndexOn, List<Guid>> _index = new ConcurrentDictionary<TIndexOn, List<Guid>>();
+        readonly IndexationList<TEntity> _indexationList = new IndexationList<TEntity>();
+        readonly List<TEntity> _entitiesWithUndefinedKey = new List<TEntity>();
+        readonly Dictionary<TIndexOn, List<TEntity>> _index = new Dictionary<TIndexOn, List<TEntity>>();
 
-        public void InsertWithUndefinedKey(Guid id)
+        public void InsertWithUndefinedKey(TEntity entity)
         {
-            _entitiesWithUndefinedKey.Add(id);
-            _indexationList.MarkIndexation(id, _entitiesWithUndefinedKey);
+            _entitiesWithUndefinedKey.Add(entity);
+            _indexationList.MarkIndexation(entity.Id, _entitiesWithUndefinedKey);
         }
 
-        public IEnumerable<Guid> IndexedWithUndefinedKey => _entitiesWithUndefinedKey;
+        public IEnumerable<TEntity> IndexedWithUndefinedKey => _entitiesWithUndefinedKey;
 
-        public void Insert(Guid id, TIndexOn key)
+        public void Insert(TEntity entity, TIndexOn key)
         {
-            List<Guid> indexList = GetIndexList(key);
-            indexList.Add(id);
-            _indexationList.MarkIndexation(id, indexList);
+            List<TEntity> indexList = GetIndexList(key);
+            indexList.Add(entity);
+            _indexationList.MarkIndexation(entity.Id, indexList);
         }
 
-        private List<Guid> GetIndexList(TIndexOn key)
+        private List<TEntity> GetIndexList(TIndexOn key)
         {
-            if (!_index.ContainsKey(key))
+            List<TEntity> list;
+
+            if (_index.TryGetValue(key, out list))
             {
-                _index.TryAdd(key, new List<Guid>());
+                return list;
             }
 
-            return _index[key];
+            list = new List<TEntity>();
+
+            _index.Add(key, list);
+
+            return list;
         }
 
-        public IEnumerable<Guid> IndexedWithKey(TIndexOn key)
+        public IEnumerable<TEntity> IndexedWithKey(TIndexOn key)
         {
-            if (!_index.ContainsKey(key)) return Enumerable.Empty<Guid>();
+            if (!_index.ContainsKey(key)) return Enumerable.Empty<TEntity>();
             return _index[key];
         }
 

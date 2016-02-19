@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using SimpleCache.ExtensionMethods;
 
@@ -10,7 +11,7 @@ namespace SimpleCache.Indexes
         ICacheIndex<TEntity>
         where TEntity : IEntity
     {
-        private readonly IndexMemory<TIndexOn> _memory = new IndexMemory<TIndexOn>();
+        private readonly IndexMemory<TEntity, TIndexOn> _memory = new IndexMemory<TEntity, TIndexOn>();
 
         Func<TEntity, TIndexOn> _indexFunc;
         ISimpleCache<TEntity> _parentCache;
@@ -23,17 +24,17 @@ namespace SimpleCache.Indexes
         public void AddOrUpdate(TEntity entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            TIndexOn indexKey = _indexFunc(entity);
+            var indexKey = _indexFunc(entity);
 
             _memory.RemoveIfStored(entity.Id);
 
             if (indexKey == null)
             {
-                _memory.InsertWithUndefinedKey(entity.Id);
+                _memory.InsertWithUndefinedKey(entity);
             }
             else
             {
-                _memory.Insert(entity.Id, indexKey);
+                _memory.Insert(entity, indexKey);
             }
         }
 
@@ -62,19 +63,16 @@ namespace SimpleCache.Indexes
 
         public IEnumerable<TEntity> GetWithUndefined()
         {
-            foreach (var entityId in _memory.IndexedWithUndefinedKey)
-            {
-                yield return _parentCache.GetEntity(entityId);
-            }
+            return _memory.IndexedWithUndefinedKey;
         }
 
         public IEnumerable<Guid> GetIds(TIndexOn key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            return _memory.IndexedWithKey(key);
+            return _memory.IndexedWithKey(key).Select(entity=>entity.Id);
         }
 
-        public IEnumerable<Guid> GetIdsWithUndefined() => _memory.IndexedWithUndefinedKey;
+        public IEnumerable<Guid> GetIdsWithUndefined() => _memory.IndexedWithUndefinedKey.Select(entity=>entity.Id);
 
         public void Initialize(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty, 
@@ -107,11 +105,7 @@ namespace SimpleCache.Indexes
         public IEnumerable<TEntity> Get(TIndexOn key)
         {
             if(key == null) throw  new ArgumentNullException(nameof(key));
-
-            foreach (var entityId in _memory.IndexedWithKey(key))
-            {
-                yield return _parentCache.GetEntity(entityId);
-            }
+            return _memory.IndexedWithKey(key);
         }
     }
 }
