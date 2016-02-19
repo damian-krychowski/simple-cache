@@ -41,11 +41,7 @@ namespace SimpleCache
         {
             if(indexExpression == null) throw new ArgumentNullException(nameof(indexExpression));
 
-            var index = FindIndex(indexExpression);
-
-            if (index == null) throw new IndexNotFoundException($"Index {indexExpression} was not registered!");
-
-            return index;
+            return FindIndex(indexExpression);
         }
 
         public ICacheIndexQuery<TEntity> Query()

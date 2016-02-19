@@ -39,6 +39,18 @@ namespace SimpleCache.Tests
             Assert.That(sut.ContainsIndexOn(dog => dog.Breed), Is.True);
         }
 
+
+        [Test]
+        public void Should_throw_when_index_expression_for_contains_index_on_methods_is_null()
+        {
+            //Arrange
+            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+                .BuildUp();
+
+            //Act & Assert
+            Assert.Throws<ArgumentNullException>(() => sut.ContainsIndexOn<string>(null));
+        }
+
         [Test]
         public void Can_build_up_with_some_entities()
         {

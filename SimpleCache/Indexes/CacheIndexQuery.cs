@@ -60,10 +60,5 @@ namespace SimpleCache.Indexes
         {
             return _hashedEntities.ToList();
         }
-
-        public int Count()
-        {
-            return _hashedEntities.Count;
-        }
     }
 }

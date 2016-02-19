@@ -69,39 +69,6 @@ namespace SimpleCache.Tests
         }
 
         [Test]
-        public void Can_query_with_many_indexes_used()
-        {
-            //Arrange
-            var teacher1 = new Teacher("Mathematics", "Arthur", 25, Sex.Male);
-            var teacher2 = new Teacher("Mathematics", "Tom", 35, Sex.Male);
-            var teacher3 = new Teacher("English", "Andrew", 35, Sex.Male);
-            var teacher4 = new Teacher("English", "Bob", 45, Sex.Male);
-            var teacher5 = new Teacher("Biology", "John", 55, Sex.Male);
-            var teacher6 = new Teacher("Mathematics", "Jessica", 25, Sex.Female);
-            var teacher7 = new Teacher("Mathematics", "Andrea", 35, Sex.Female);
-            var teacher8 = new Teacher("English", "Kate", 35, Sex.Female);
-            var teacher9 = new Teacher("English", "Sandra", 45, Sex.Female);
-            var teacher10 = new Teacher("Biology", "Lara", 55, Sex.Female);
-
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Teacher>()
-                .WithIndex(teacher => teacher.ResponsibleForClasses)
-                .WithIndex(teacher => teacher.Age)
-                .WithIndex(teacher => teacher.Name)
-                .WithIndex(teacher => teacher.Sex)
-                .BuildUp(new[] { teacher1, teacher2, teacher3, teacher4, teacher5, teacher6, teacher7, teacher8, teacher9, teacher10 });
-
-            //Act
-            var result = sut.Query()
-                .Where(t => t.ResponsibleForClasses, classes => classes == "Mathematics")
-                .Where(t=>t.Age, age=> age>30)
-                .Where(t=>t.Name, name=> name.EndsWith("a"))
-                .ToList();
-
-            //Assert
-            CollectionAssert.AreEquivalent(new[] { teacher7 }, result);
-        }
-
-        [Test]
         public void Can_query_with_many_indexes_for_items_with_undefined_keys()
         {
             //Arrange

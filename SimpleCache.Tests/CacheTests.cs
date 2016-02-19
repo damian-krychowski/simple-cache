@@ -43,6 +43,17 @@ namespace SimpleCache.Tests
         }
 
         [Test]
+        public void Should_throw_when_adding_null_entity()
+        {
+            //Arrange
+            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+               .BuildUp();
+            
+            //Act & Assert
+            Assert.Throws<ArgumentNullException>(()=>sut.AddOrUpdate(null));
+        }
+
+        [Test]
         public void Can_add_range_of_entities()
         {
             //Arrange
@@ -59,6 +70,18 @@ namespace SimpleCache.Tests
             //Assert
            CollectionAssert.AreEquivalent(new[] { dog1, dog2, dog3 }, sut.Items);
          }
+
+
+        [Test]
+        public void Should_throw_when_adding_null_entities_range()
+        {
+            //Arrange
+            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+               .BuildUp();
+
+            //Act & Assert
+            Assert.Throws<ArgumentNullException>(() => sut.AddOrUpdateRange(null));
+        }
 
         [Test]
         public void Can_get_entity()

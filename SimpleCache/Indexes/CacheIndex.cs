@@ -23,7 +23,6 @@ namespace SimpleCache.Indexes
 
         public void AddOrUpdate(TEntity entity)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
             var indexKey = _indexFunc(entity);
 
             _memory.RemoveIfStored(entity.Id);
@@ -36,12 +35,6 @@ namespace SimpleCache.Indexes
             {
                 _memory.Insert(entity, indexKey);
             }
-        }
-
-        public void TryRemove(TEntity entity)
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            TryRemove(entity.Id);
         }
 
         public void TryRemove(Guid entityId)
@@ -67,20 +60,9 @@ namespace SimpleCache.Indexes
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty, 
             ISimpleCache<TEntity> parentCache)
         {
-            if (firstIndexedProperty == null) throw new ArgumentNullException(nameof(firstIndexedProperty));
-            if (parentCache == null) throw new ArgumentNullException(nameof(parentCache));
-
             _indexFunc = firstIndexedProperty.Compile();
             IndexExpression = firstIndexedProperty;
             _parentCache = parentCache;
-        }
-
-        public void BuildUp(IEnumerable<TEntity> entities)
-        {
-            foreach(var entity in entities)
-            {
-                AddOrUpdate(entity);
-            }
         }
 
         public Expression<Func<TEntity, TIndexOn>> IndexExpression

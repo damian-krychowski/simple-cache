@@ -15,6 +15,5 @@ namespace SimpleCache.Indexes
             Expression<Func<TEntity, TIndexOn>> indexExpression, Func<TIndexOn, bool> valueCondition);
 
         List<TEntity> ToList();
-        int Count();
     }
 }
