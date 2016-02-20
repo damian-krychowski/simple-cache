@@ -1,2 +1,2 @@
 # simple-cache
-Simple c# concurrent cache supporting indexes.
+Simple c# concurrent cache with indexes.
