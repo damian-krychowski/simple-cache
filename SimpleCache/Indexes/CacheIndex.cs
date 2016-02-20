@@ -54,7 +54,7 @@ namespace SimpleCache.Indexes
 
         public void Clear() => _memory.Clear();
 
-        public IEnumerable<TEntity> GetWithUndefined() => _memory.IndexedWithUndefinedKey;
+        public List<TEntity> GetWithUndefined() => _memory.IndexedWithUndefinedKey.ToList();
 
         public void Initialize(
             Expression<Func<TEntity, TIndexOn>> firstIndexedProperty, 
@@ -73,10 +73,10 @@ namespace SimpleCache.Indexes
 
         public IEnumerable<TIndexOn> Keys => _memory.Keys;
 
-        public IEnumerable<TEntity> Get(TIndexOn key)
+        public List<TEntity> Get(TIndexOn key)
         {
             if(key == null) throw  new ArgumentNullException(nameof(key));
-            return _memory.IndexedWithKey(key);
+            return _memory.IndexedWithKey(key).ToList();
         }
     }
 }

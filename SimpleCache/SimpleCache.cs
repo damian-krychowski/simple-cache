@@ -14,6 +14,8 @@ namespace SimpleCache
     internal class SimpleCache<TEntity> : ISimpleCache<TEntity>
         where TEntity : IEntity
     {
+       
+
         private readonly Dictionary<Guid, TEntity> _items = new Dictionary<Guid, TEntity>();
         private readonly List<ICacheIndex<TEntity>> _indexes = new List<ICacheIndex<TEntity>>();
 

@@ -20,7 +20,7 @@ namespace SimpleCache.Indexes
 
         IEnumerable<TIndexedOn> Keys { get; }
 
-        IEnumerable<TEntity> Get(TIndexedOn key);
-        IEnumerable<TEntity> GetWithUndefined();
+        List<TEntity> Get(TIndexedOn key);
+        List<TEntity> GetWithUndefined();
     }
 }

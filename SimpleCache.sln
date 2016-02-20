@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCache", "SimpleCache\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCache.Tests", "SimpleCache.Tests\SimpleCache.Tests.csproj", "{6F9CE637-3F95-4AA7-8A02-B94A434428FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCache.ConcurrencyTests", "SimpleCache.ConcurrencyTests\SimpleCache.ConcurrencyTests.csproj", "{DA61A1C5-2A92-4803-AC76-08626DAE7B98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6F9CE637-3F95-4AA7-8A02-B94A434428FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F9CE637-3F95-4AA7-8A02-B94A434428FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F9CE637-3F95-4AA7-8A02-B94A434428FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA61A1C5-2A92-4803-AC76-08626DAE7B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA61A1C5-2A92-4803-AC76-08626DAE7B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA61A1C5-2A92-4803-AC76-08626DAE7B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA61A1C5-2A92-4803-AC76-08626DAE7B98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
