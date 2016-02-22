@@ -5,6 +5,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using SimpleCache.Builder;
+using SimpleCache.ConcurrencyTests.ThreadsRunner;
 
 namespace SimpleCache.ConcurrencyTests
 {
@@ -13,9 +14,14 @@ namespace SimpleCache.ConcurrencyTests
     {
         class Dog : IEntity
         {
-            public Guid Id { get; set; }
+            public Guid Id { get; }
             public string Name { get; set; }
             public int Age { get; set; }
+
+            public Dog()
+            {
+                Id = Guid.NewGuid();
+            }
         }
 
         [Test]
@@ -24,20 +30,18 @@ namespace SimpleCache.ConcurrencyTests
             //Arrange
             var results = new ConcurrentDictionary<int, Dog>();
 
-            var dog1 = new Dog { Id = Guid.NewGuid(), Name = "Tony" };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew" };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
+            var dog1 = new Dog {Name = "Tony"};
+            var dog2 = new Dog {Name = "Andrew"};
+            var dog3 = new Dog {Name = "John"};
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .BuildUp(new [] {dog1, dog2, dog3});        
+                .BuildUp(new[] {dog1, dog2, dog3});
 
             //Act
-            new ThreadsRunner<Dog>()
-
-                .Run(() => sut.GetEntity(dog1.Id))
-                    .Threads(1000)
+            ThreadsRunnerFactory.Create()
+                .PlanExecution(() => sut.GetEntity(dog1.Id))
+                    .Threads(10)
                     .StoreResult(results)
-
                 .StartAndWaitAll();
 
             //Assert
@@ -53,28 +57,26 @@ namespace SimpleCache.ConcurrencyTests
             //Arrange
             var results = new ConcurrentDictionary<int, List<Dog>>();
 
-            var dog1 = new Dog {Id = Guid.NewGuid(), Name = "Tony", Age = 1};
-            var dog2 = new Dog {Id = Guid.NewGuid(), Name = "Andrew", Age = 2};
-            var dog3 = new Dog {Id = Guid.NewGuid(), Name = "John", Age = 3};
+            var dog1 = new Dog {Name = "Tony", Age = 1};
+            var dog2 = new Dog {Name = "Andrew", Age = 2};
+            var dog3 = new Dog {Name = "John", Age = 3};
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                 .WithIndex(dog => dog.Age >= 2)
                 .BuildUp(new[] {dog1, dog2, dog3});
 
             //Act
-             new ThreadsRunner<List<Dog>>()
-
-                .Run(() => sut.Index(dog => dog.Age >= 2).Get(true))
-                    .Threads(1000)
+            ThreadsRunnerFactory.Create()
+                .PlanExecution(() => sut.Index(dog => dog.Age >= 2).Get(true))
+                    .Threads(10)
                     .StoreResult(results)
-
                 .StartAndWaitAll();
 
             //Assert
-           foreach (var value in results.Values)
-           {
-               value.ShouldAllBeEquivalentTo(new[] {dog2, dog3});
-           }
+            foreach (var value in results.Values)
+            {
+                value.ShouldAllBeEquivalentTo(new[] {dog2, dog3});
+            }
         }
 
         [Test]
@@ -84,55 +86,49 @@ namespace SimpleCache.ConcurrencyTests
             var trueResults = new ConcurrentDictionary<int, List<Dog>>();
             var falseResults = new ConcurrentDictionary<int, List<Dog>>();
 
-            var dog1 = new Dog { Id = Guid.NewGuid(), Name = "Tony", Age = 1 };
-            var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew", Age = 2 };
-            var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John", Age = 3 };
+            var dog1 = new Dog {Name = "Tony", Age = 1};
+            var dog2 = new Dog {Name = "Andrew", Age = 2};
+            var dog3 = new Dog {Name = "John", Age = 3};
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
                 .WithIndex(dog => dog.Age >= 2)
-                .BuildUp(new[] { dog1, dog2, dog3 });
+                .BuildUp(new[] {dog1, dog2, dog3});
 
             //Act
-             new ThreadsRunner<List<Dog>>()
-
-                .Run(() => sut.Index(dog => dog.Age >= 2).Get(true))
-                    .Threads(500)
+            ThreadsRunnerFactory.Create()
+                .PlanExecution(() => sut.Index(dog => dog.Age >= 2).Get(true))
+                    .Threads(10)
                     .StoreResult(trueResults)
-
-                .Run(()=> sut.Index(dog => dog.Age >= 2).Get(false))
-                    .Threads(500)
+                .PlanExecution(() => sut.Index(dog => dog.Age >= 2).Get(false))
+                    .Threads(10)
                     .StoreResult(falseResults)
-
                 .StartAndWaitAll();
 
             //Assert
             foreach (var value in trueResults.Values)
             {
-                value.ShouldAllBeEquivalentTo(new[] { dog2, dog3 });
+                value.ShouldAllBeEquivalentTo(new[] {dog2, dog3});
             }
 
             foreach (var value in falseResults.Values)
             {
-                value.ShouldAllBeEquivalentTo(new[] { dog1 });
+                value.ShouldAllBeEquivalentTo(new[] {dog1});
             }
         }
 
         [Test]
-        public void Can_items_from_index_be_read_or_removed_simultaneously()
+        public void Can_perform_many_concurrent_cached_items_removing()
         {
             //Arrange
-            var trueResults = new ConcurrentDictionary<int, List<Dog>>();
-            var falseResults = new ConcurrentDictionary<int, List<Dog>>();
-
             var dogs = new List<Dog>();
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 30; i++)
             {
-                var dog1 = new Dog {Id = Guid.NewGuid(), Name = "Tony", Age = 1};
-                var dog2 = new Dog {Id = Guid.NewGuid(), Name = "Andrew", Age = 2};
-                var dog3 = new Dog {Id = Guid.NewGuid(), Name = "John", Age = 3};
+                var dog1 = new Dog { Name = "Tony", Age = 1 };
+                var dog2 = new Dog { Name = "Andrew", Age = 2 };
+                var dog3 = new Dog { Name = "John", Age = 3 };
 
-                dogs.AddRange(new[] {dog1, dog2, dog3});
+                dogs.AddRange(new[] { dog1, dog2, dog3 });
             }
 
             var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
@@ -140,20 +136,46 @@ namespace SimpleCache.ConcurrencyTests
                 .BuildUp(dogs);
 
             //Act
-            var threadsRunner = new ThreadsRunner<List<Dog>>()
-                .Run(() => sut.Index(dog => dog.Age >= 2).Get(true))
-                    .Threads(5000)
-                    .StoreResult(trueResults);
+            ThreadsRunnerFactory.Create()
+                .PlanExecution((index) => sut.Remove(dogs[index].Id))
+                    .Threads(90)
+                .StartAndWaitAll();
 
-            threadsRunner.StartWithoutWaiting();
+            //Assert
+            sut.Items.Should().BeEmpty();
+        }
 
-            foreach (var dog in dogs)
+        [Test]
+        public void Can_items_from_index_be_read_or_removed_simultaneously()
+        {
+            //Arrange
+            var trueResults = new ConcurrentDictionary<int, List<Dog>>();
+            var dogs = new List<Dog>();
+
+            for (int i = 0; i < 30; i++)
             {
-                sut.Remove(dog.Id);
+                var dog1 = new Dog { Name = "Tony", Age = 1 };
+                var dog2 = new Dog { Name = "Andrew", Age = 2 };
+                var dog3 = new Dog { Name = "John", Age = 3 };
+
+                dogs.AddRange(new[] { dog1, dog2, dog3 });
             }
 
-            threadsRunner.WaitAll();
+            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+                .WithIndex(dog => dog.Age >= 2)
+                .BuildUp(dogs);
 
+            //Act
+            ThreadsRunnerFactory.Create()
+                .PlanExecution((index) => sut.Remove(dogs[index].Id))
+                    .Threads(90)
+                .PlanExecution(() => sut.Index(dog => dog.Age >= 2).Get(true))
+                    .Threads(10)
+                    .StoreResult(trueResults)
+
+                .StartAndWaitAll();
+
+            //Assert
             sut.Items.Should().BeEmpty();
         }
     }

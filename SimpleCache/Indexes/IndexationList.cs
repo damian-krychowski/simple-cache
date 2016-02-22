@@ -9,9 +9,10 @@ namespace SimpleCache.Indexes
     {
         private readonly Dictionary<Guid, List<TEntity>> _indexationList = new Dictionary<Guid, List<TEntity>>();
 
-        public void MarkIndexation(Guid id, List<TEntity> collection)
+        public void MarkIndexation(TEntity entity, List<TEntity> collection)
         {
-            _indexationList.Add(id, collection);
+            collection.Add(entity);
+            _indexationList.Add(entity.Id, collection);
         }
 
         public void RemoveFromLookupAndMemory(Guid id)

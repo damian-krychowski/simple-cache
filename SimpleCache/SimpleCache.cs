@@ -14,9 +14,7 @@ namespace SimpleCache
     internal class SimpleCache<TEntity> : ISimpleCache<TEntity>
         where TEntity : IEntity
     {
-       
-
-        private readonly Dictionary<Guid, TEntity> _items = new Dictionary<Guid, TEntity>();
+        private readonly ConcurrentDictionary<Guid, TEntity> _items = new ConcurrentDictionary<Guid, TEntity>();
         private readonly List<ICacheIndex<TEntity>> _indexes = new List<ICacheIndex<TEntity>>();
 
         public void Initialize(CacheDefinition cacheDefinition)
@@ -80,7 +78,8 @@ namespace SimpleCache
 
         public void Remove(Guid id)
         {
-            _items.Remove(id);
+            TEntity entity;
+            _items.TryRemove(id, out entity);
             RemoveFromIndexes(id);
         }
 
