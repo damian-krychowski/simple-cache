@@ -126,15 +126,5 @@ namespace SimpleCache.Indexes
                 _indexationList.RemoveFromLookupAndMemory(id);
             }
         }
-
-        public void Clear()
-        {
-            using (_memoryLock.ModifyMemory())
-            {
-                _indexationList.Clear();
-                _index.Clear();
-                _entitiesWithUndefinedKey.Clear();
-            }
-        }
     }
 }

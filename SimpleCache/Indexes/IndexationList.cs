@@ -25,10 +25,5 @@ namespace SimpleCache.Indexes
                 _indexationList.Remove(id);
             }
         }
-
-        public void Clear()
-        {
-            _indexationList.Clear();
-        }
     }
 }
