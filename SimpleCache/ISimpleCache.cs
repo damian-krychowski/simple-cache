@@ -27,6 +27,5 @@ namespace SimpleCache
         void Remove(Guid id);
 
         void RebuildIndexes();
-        void Clear();
     }
 }

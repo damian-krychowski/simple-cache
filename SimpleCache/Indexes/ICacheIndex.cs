@@ -4,13 +4,12 @@ using System.Linq.Expressions;
 
 namespace SimpleCache.Indexes
 {
-    internal interface ICacheIndex<TEntity>
+    internal interface ICacheIndex<in TEntity>
         where TEntity : IEntity
     { 
         void AddOrUpdate(TEntity entity);
         void TryRemove(Guid entityId);
         void Rebuild();
-        void Clear();
         bool IsOnExpression(Expression indexExpression);
     }
 

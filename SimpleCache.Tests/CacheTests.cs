@@ -196,23 +196,6 @@ namespace SimpleCache.Tests
             CollectionAssert.AreEquivalent(new[] { dog1, dog2, dog3 }, sut.Items);
         }
 
-        [Test]
-        public void Can_clear()
-        {
-            //Arrange
-            var dog1 = new Dog {Id = Guid.NewGuid(), Name = "Tony"};
-            var dog2 = new Dog {Id = Guid.NewGuid(), Name = "Andrew"};
-            var dog3 = new Dog {Id = Guid.NewGuid(), Name = "John"};
-            
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-                .BuildUp(new [] {dog1, dog2, dog3});
-
-            //Act
-            sut.Clear();
-
-            //Assert
-            CollectionAssert.AreEquivalent(Enumerable.Empty<Dog>(), sut.Items);
-        }
 
         [Test]
         public void Can_remove_entity_by_id()

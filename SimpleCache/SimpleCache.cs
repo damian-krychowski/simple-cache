@@ -91,16 +91,6 @@ namespace SimpleCache
             }
         }
 
-        public void Clear()
-        {
-            foreach (var cacheIndex in _indexes)
-            {
-                cacheIndex.Clear();
-            }
-
-            _items.Clear();
-        }
-
         private void AddOrUpdateIndexes(TEntity entity)
         {
             foreach (var cacheIndex in _indexes)

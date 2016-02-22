@@ -93,28 +93,6 @@ namespace SimpleCache.Tests
         }
 
         [Test]
-        public void Can_clear()
-        {
-            //Arrange
-            var dog1 = new Dog { Breed = "Breed A", Name = "Tony" };
-            var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
-            var dog3 = new Dog { Breed = "Breed B", Name = "John" };
-
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
-               .WithIndex(dog => dog.Breed)
-               .BuildUp(new[] { dog1, dog2, dog3 });
-
-            //Act
-            sut.Clear();
-            var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
-            var breedBDogs = sut.Index(dog => dog.Breed).Get("Breed B");
-
-            //Assert
-            CollectionAssert.AreEquivalent(Enumerable.Empty<Dog>(), breedADogs);
-            CollectionAssert.AreEquivalent(Enumerable.Empty<Dog>(), breedBDogs);
-        }
-
-        [Test]
         public void Can_get_entities_with_index()
         {
             //Arrange

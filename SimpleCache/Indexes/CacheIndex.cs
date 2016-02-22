@@ -11,15 +11,12 @@ namespace SimpleCache.Indexes
         ICacheIndex<TEntity>
         where TEntity : IEntity
     {
-        private readonly IndexMemory<TEntity, TIndexOn> _memory = new IndexMemory<TEntity, TIndexOn>();
+        private IndexMemory<TEntity, TIndexOn> _memory = new IndexMemory<TEntity, TIndexOn>();
 
         private Func<TEntity, TIndexOn> _indexFunc;
         private ISimpleCache<TEntity> _parentCache;
 
-        public bool IsOnExpression(Expression indexExpression)
-        {
-            return indexExpression.Comapre(IndexExpression);
-        }
+        public bool IsOnExpression(Expression indexExpression) => indexExpression.Comapre(IndexExpression);
 
         public void AddOrUpdate(TEntity entity)
         {
@@ -37,22 +34,17 @@ namespace SimpleCache.Indexes
             }
         }
 
-        public void TryRemove(Guid entityId)
-        {
-            _memory.RemoveIfStored(entityId);
-        }
+        public void TryRemove(Guid entityId) => _memory.RemoveIfStored(entityId);
 
         public void Rebuild()
         {
-            Clear();
+            _memory = new IndexMemory<TEntity, TIndexOn>();
 
             foreach (var entity in _parentCache.Items)
             {
                 AddOrUpdate(entity);
             }
         }
-
-        public void Clear() => _memory.Clear();
 
         public List<TEntity> GetWithUndefined() => _memory.IndexedWithUndefinedKey();
 
