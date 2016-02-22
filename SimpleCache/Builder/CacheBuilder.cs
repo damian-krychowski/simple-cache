@@ -25,6 +25,13 @@ namespace SimpleCache.Builder
             return this;
         }
 
+        public ICacheBuilder<TEntity> WithSortedIndex<TIndexOn, TSortedBy>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression, 
+            Func<TEntity, TSortedBy> orderBySelector) where TSortedBy : IComparable<TSortedBy>
+        {
+            throw new NotImplementedException();
+        }
+
         ISimpleCache<TEntity> ICacheBuilder<TEntity>.BuildUp()
         {
             SimpleCache<TEntity> cache = new SimpleCache<TEntity>();

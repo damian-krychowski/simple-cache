@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using SimpleCache.ExtensionMethods;
+using SimpleCache.Indexes.Memory;
 
 namespace SimpleCache.Indexes
 {
@@ -11,10 +12,15 @@ namespace SimpleCache.Indexes
         ICacheIndex<TEntity>
         where TEntity : IEntity
     {
-        private IndexMemory<TEntity, TIndexOn> _memory = new IndexMemory<TEntity, TIndexOn>();
+        private IIndexMemory<TEntity, TIndexOn> _memory;
 
         private Func<TEntity, TIndexOn> _indexFunc;
         private ISimpleCache<TEntity> _parentCache;
+
+        public CacheIndex(IIndexMemory<TEntity, TIndexOn> memory)
+        {
+            _memory = memory;
+        }
 
         public bool IsOnExpression(Expression indexExpression) => indexExpression.Comapre(IndexExpression);
 

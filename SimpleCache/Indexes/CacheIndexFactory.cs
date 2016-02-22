@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using SimpleCache.Builder;
+using SimpleCache.Indexes.Memory;
 
 namespace SimpleCache.Indexes
 {
@@ -29,7 +30,8 @@ namespace SimpleCache.Indexes
             Expression<Func<TEntity,TIndexOn>> firstIndexedProperty, 
             ISimpleCache<TEntity> parentCache)
         {
-            CacheIndex<TEntity, TIndexOn> index = new CacheIndex<TEntity, TIndexOn>();
+            CacheIndex<TEntity, TIndexOn> index = new CacheIndex<TEntity, TIndexOn>(
+                new IndexMemory<TEntity, TIndexOn>());
 
             index.Initialize(firstIndexedProperty, parentCache);
 
