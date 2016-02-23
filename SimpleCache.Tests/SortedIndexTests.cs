@@ -31,7 +31,7 @@ namespace SimpleCache.Tests
         public void Can_register_ascending_sorted_index()
         {
             //Act
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithSortedIndex(dog=> dog.Breed, dog=>dog.Age).Ascending()
                 .BuildUp();
 
@@ -45,7 +45,7 @@ namespace SimpleCache.Tests
         public void Can_register_descending_sorted_index()
         {
             //Act
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithSortedIndex(dog => dog.Breed, dog => dog.Age).Descending()
                 .BuildUp();
 
@@ -65,7 +65,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Breed = "Breed B", Name = "John", Age = 1};
 
             //Act
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithSortedIndex(dog => dog.Breed, dog=>dog.Age).Ascending()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -88,7 +88,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Breed = "Breed B", Name = "John", Age = 3 };
 
             //Act
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithSortedIndex(dog => dog.Breed, dog => dog.Age).Descending()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -110,7 +110,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = "Breed A", Name = "Andrew", Age = 2 };
             var dog3 = new Dog { Breed = "Breed B", Name = "John", Age = 3 };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithSortedIndex(dog => dog.Breed, dog=>dog.Age).Ascending()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -141,7 +141,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = "Breed A", Name = "Andrew", Age = 2 };
             var dog3 = new Dog { Breed = "Breed B", Name = "John", Age = 3 };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                .WithSortedIndex(dog => dog.Breed, dog => dog.Age).Ascending()
                .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -164,7 +164,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = "Breed A", Name = "Andrew", Age = 2 };
             var dog3 = new Dog { Breed = "Breed A", Name = "John", Age = 3 };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                .WithSortedIndex(dog => dog.Breed, dog => dog.Age).Ascending()
                .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -192,7 +192,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = null, Name = "Andrew", Age = 1 };
             var dog3 = new Dog { Breed = "Breed B", Name = "John", Age = 3 };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                .WithSortedIndex(dog => dog.Breed, dog => dog.Age).Ascending()
                .BuildUp(new[] { dog1, dog2, dog3 });
 

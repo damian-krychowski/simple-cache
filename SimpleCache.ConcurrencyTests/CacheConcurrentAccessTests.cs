@@ -34,7 +34,7 @@ namespace SimpleCache.ConcurrencyTests
             var dog2 = new Dog {Name = "Andrew"};
             var dog3 = new Dog {Name = "John"};
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] {dog1, dog2, dog3});
 
             //Act
@@ -61,7 +61,7 @@ namespace SimpleCache.ConcurrencyTests
             var dog2 = new Dog {Name = "Andrew", Age = 2};
             var dog3 = new Dog {Name = "John", Age = 3};
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Age >= 2)
                 .BuildUp(new[] {dog1, dog2, dog3});
 
@@ -90,7 +90,7 @@ namespace SimpleCache.ConcurrencyTests
             var dog2 = new Dog {Name = "Andrew", Age = 2};
             var dog3 = new Dog {Name = "John", Age = 3};
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Age >= 2)
                 .BuildUp(new[] {dog1, dog2, dog3});
 
@@ -131,7 +131,7 @@ namespace SimpleCache.ConcurrencyTests
                 dogs.AddRange(new[] { dog1, dog2, dog3 });
             }
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Age >= 2)
                 .BuildUp(dogs);
 
@@ -161,7 +161,7 @@ namespace SimpleCache.ConcurrencyTests
                 dogs.AddRange(new[] { dog1, dog2, dog3 });
             }
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Age >= 2)
                 .BuildUp(dogs);
 

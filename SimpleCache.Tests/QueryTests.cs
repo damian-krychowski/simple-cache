@@ -52,7 +52,7 @@ namespace SimpleCache.Tests
             var teacher9 = new Teacher("English", "Sandra", 45, Sex.Female);
             var teacher10 = new Teacher("Biology", "Lara", 55, Sex.Female);
             
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Teacher>()
+            var sut = CacheBuilderFactory.Create<Teacher>()
                 .WithIndex(teacher => teacher.ResponsibleForClasses)
                 .WithIndex(teacher => teacher.Age)
                 .WithIndex(teacher => teacher.Name)
@@ -83,7 +83,7 @@ namespace SimpleCache.Tests
             var teacher9 = new Teacher("English", "Sandra", 45, Sex.Female);
             var teacher10 = new Teacher("Biology", "Lara", 55, Sex.Female);
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Teacher>()
+            var sut = CacheBuilderFactory.Create<Teacher>()
                 .WithIndex(teacher => teacher.ResponsibleForClasses)
                 .WithIndex(teacher => teacher.Age)
                 .WithIndex(teacher => teacher.Name)
@@ -105,7 +105,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_unkown_index_was_used()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Teacher>()
+            var sut = CacheBuilderFactory.Create<Teacher>()
                 .BuildUp();
 
             //Act & Assert
@@ -118,7 +118,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_index_selector_is_null()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Teacher>()
+            var sut = CacheBuilderFactory.Create<Teacher>()
                 .BuildUp();
 
             //Act & Assert
@@ -131,7 +131,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_value_condition_is_null()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Teacher>()
+            var sut = CacheBuilderFactory.Create<Teacher>()
                 .BuildUp();
 
             //Act & Assert

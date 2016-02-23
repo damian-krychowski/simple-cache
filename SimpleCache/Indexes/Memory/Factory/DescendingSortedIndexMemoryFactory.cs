@@ -15,7 +15,8 @@ namespace SimpleCache.Indexes.Memory.Factory
 
         public IIndexMemory<TEntity, TIndexOn> Create()
         {
-            return SortedIndexMemory<TEntity, TIndexOn, TOrderBy>.CreateDescending(_orderBySelector);
+            return new SortedIndexMemory<TEntity, TIndexOn, TOrderBy>(
+                new DescendingFuncComparer<TEntity, TOrderBy>(_orderBySelector));
         }
     }
 }

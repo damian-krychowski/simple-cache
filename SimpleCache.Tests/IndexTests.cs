@@ -42,7 +42,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_index_not_found()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp();
 
             //Act & Assert
@@ -53,7 +53,7 @@ namespace SimpleCache.Tests
         public void Can_register_index()
         {
             //Act
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp();
 
@@ -66,7 +66,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_index_expression_for_contains_index_on_method_is_null()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp();
 
             //Act & Assert
@@ -82,7 +82,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
             //Act
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -100,7 +100,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
             var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
             
@@ -119,7 +119,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
             var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -143,7 +143,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
             var dog3 = new Dog { Breed = "Breed B", Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -159,7 +159,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_index_get_with_null_value()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp();
 
@@ -172,7 +172,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_index_used_with_null_value()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp();
 
@@ -189,7 +189,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = "Breed A", Name = "Andrew" };
             var dog3 = new Dog { Breed = "Breed A", Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -214,7 +214,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Breed = null, Name = "Andrew" };
             var dog3 = new Dog { Breed = "Breed A", Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Breed)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -233,7 +233,7 @@ namespace SimpleCache.Tests
             var cat2 = new Cat {WorstEnemy = new Dog {Breed = null, Name = "Andrew"}};
             var cat3 = new Cat {WorstEnemy = null};
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Cat>()
+            var sut = CacheBuilderFactory.Create<Cat>()
                 .WithIndex(cat => cat.WorstEnemy.Breed)
                 .BuildUp(new[] {cat1, cat2, cat3});
 
@@ -252,7 +252,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Age = 1 };
             var dog3 = new Dog { Age = 2 };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .WithIndex(dog => dog.Age)
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
@@ -271,7 +271,7 @@ namespace SimpleCache.Tests
             var cat2 = new Cat { WorstEnemy = new Dog() };
             var cat3 = new Cat { WorstEnemy = null };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Cat>()
+            var sut = CacheBuilderFactory.Create<Cat>()
                 .WithIndex(cat => cat.WorstEnemy.Age)
                 .BuildUp(new[] { cat1, cat2, cat3 });
 

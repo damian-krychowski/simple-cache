@@ -68,7 +68,7 @@ namespace SimpleCache.Builder
                 parentCache);
         }
 
-        ISimpleCache<TEntity> ICacheBuilder<TEntity>.BuildUp()
+        public ISimpleCache<TEntity> BuildUp()
         {
             var cache = new SimpleCache<TEntity>(_indexFactories);
             return cache;

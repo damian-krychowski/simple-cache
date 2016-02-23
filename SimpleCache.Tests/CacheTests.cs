@@ -19,7 +19,7 @@ namespace SimpleCache.Tests
         public void Should_be_empty_when_nothing_is_added()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                .BuildUp();
 
             //Assert
@@ -30,7 +30,7 @@ namespace SimpleCache.Tests
         public void Can_add_entity()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                .BuildUp();
 
             var dog = new Dog {Id = Guid.NewGuid(), Name = "Tony"};
@@ -46,7 +46,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_adding_null_entity()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                .BuildUp();
             
             //Act & Assert
@@ -57,7 +57,7 @@ namespace SimpleCache.Tests
         public void Can_add_range_of_entities()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp();
 
             var dog1 = new Dog { Id = Guid.NewGuid(), Name = "Tony" };
@@ -76,7 +76,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_adding_null_entities_range()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                .BuildUp();
 
             //Act & Assert
@@ -91,7 +91,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew" };
             var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
@@ -105,7 +105,7 @@ namespace SimpleCache.Tests
         public void Should_throw_when_getting_entity_not_cached()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp();
 
             //Act & Assert
@@ -120,7 +120,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew" };
             var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
@@ -136,7 +136,7 @@ namespace SimpleCache.Tests
         public void Can_try_to_get_entity_when_not_cached()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp();
 
             //Act
@@ -156,7 +156,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew" };
             var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
@@ -170,7 +170,7 @@ namespace SimpleCache.Tests
         public void Can_check_if_not_cached_entity_is_not_contained()
         {
             //Arrange
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp();
 
             //Act
@@ -189,7 +189,7 @@ namespace SimpleCache.Tests
             var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
 
             //Act
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Assert
@@ -205,7 +205,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew" };
             var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
@@ -223,7 +223,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew" };
             var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             var updatedDog1 = new Dog {Id = dog1.Id, Name = "New Tony"};
@@ -243,7 +243,7 @@ namespace SimpleCache.Tests
             var dog2 = new Dog { Id = Guid.NewGuid(), Name = "Andrew" };
             var dog3 = new Dog { Id = Guid.NewGuid(), Name = "John" };
 
-            var sut = CacheBuilderFactory.CreateCacheBuilder<Dog>()
+            var sut = CacheBuilderFactory.Create<Dog>()
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             var updatedDog1 = new Dog { Id = dog1.Id, Name = "New Tony" };
