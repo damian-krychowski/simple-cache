@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using SimpleCache.Builder;
 using SimpleCache.Exceptions;
@@ -9,7 +10,7 @@ namespace SimpleCache.Tests
     [TestFixture]
     internal class IndexTests
     {
-        class Dog : IEntity
+        private class Dog : IEntity
         {
             public Guid Id { get; }
             public string Name { get; set; }
@@ -27,7 +28,7 @@ namespace SimpleCache.Tests
             }
         }
 
-        class Cat : IEntity
+        private class Cat : IEntity
         {
             public Guid Id { get;  }
             public Dog WorstEnemy { get; set; }
@@ -46,7 +47,8 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<IndexNotFoundException>(() => sut.Index(dog => dog.Breed));
+            Action act = () => sut.Index(dog => dog.Breed);
+            act.ShouldThrow<IndexNotFoundException>();
         }
 
         [Test]
@@ -58,7 +60,9 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Assert
-            Assert.That(sut.ContainsIndexOn(dog => dog.Breed), Is.True);
+            sut.ContainsIndexOn(dog => dog.Breed)
+                .Should()
+                .BeTrue();
         }
 
 
@@ -70,7 +74,8 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<ArgumentNullException>(() => sut.ContainsIndexOn<string>(null));
+            Action act = () => sut.ContainsIndexOn<string>(null);
+            act.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
@@ -89,7 +94,7 @@ namespace SimpleCache.Tests
             var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, breedADogs);
+            breedADogs.ShouldAllBeEquivalentTo(new[] { dog1, dog2 });
         }
 
         [Test]
@@ -108,7 +113,7 @@ namespace SimpleCache.Tests
             var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, breedADogs);
+            breedADogs.ShouldAllBeEquivalentTo(new[] { dog1, dog2 });
         }
 
         [Test]
@@ -131,8 +136,8 @@ namespace SimpleCache.Tests
             var breedCDogs = sut.Index(dog => dog.Breed).Get("Breed C");
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog2 }, breedADogs);
-            CollectionAssert.AreEquivalent(new[] { updatedDog1 }, breedCDogs);
+            breedADogs.ShouldAllBeEquivalentTo(new[] { dog2 });
+            breedCDogs.ShouldAllBeEquivalentTo(new[] { updatedDog1 });
         }
 
         [Test]
@@ -152,7 +157,7 @@ namespace SimpleCache.Tests
             var breedADogs = sut.Index(dog => dog.Breed).Get("Breed A");
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog2 }, breedADogs);
+            breedADogs.ShouldAllBeEquivalentTo(new[] { dog2 });
         }
 
         [Test]
@@ -164,8 +169,8 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<ArgumentNullException>(
-                () => sut.Index<string>(null));
+            Action act = () => sut.Index<string>(null);
+            act.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
@@ -177,8 +182,8 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<ArgumentNullException>(
-                () => sut.Index(dog => dog.Breed).Get(null).ToArray());
+            Action act = () => sut.Index(dog => dog.Breed).Get(null);
+            act.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
@@ -194,16 +199,13 @@ namespace SimpleCache.Tests
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Act
-            var initialState = sut.Index(dog => dog.Breed).Get("Breed A").ToArray();
-
             dog1.Breed = "Changed Breed";
             sut.RebuildIndexes();
 
             var rebuiltState = sut.Index(dog => dog.Breed).Get("Breed A").ToArray();
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog1, dog2, dog3 }, initialState);
-            CollectionAssert.AreEquivalent(new[] { dog2, dog3 }, rebuiltState);
+            rebuiltState.ShouldAllBeEquivalentTo(new[] { dog2, dog3 });
         }
 
         [Test]
@@ -222,7 +224,7 @@ namespace SimpleCache.Tests
             var nullBreedDogs = sut.Index(dog => dog.Breed).GetWithUndefined();
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, nullBreedDogs);
+            nullBreedDogs.ShouldAllBeEquivalentTo(new[] { dog1, dog2 });
         }
 
         [Test]
@@ -241,7 +243,7 @@ namespace SimpleCache.Tests
             var result = sut.Index(cat => cat.WorstEnemy.Breed).GetWithUndefined();
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] {cat2, cat3}, result);
+            result.ShouldAllBeEquivalentTo(new[] { cat2, cat3 });
         }
 
         [Test]
@@ -260,7 +262,7 @@ namespace SimpleCache.Tests
             var result = sut.Index(dog => dog.Age).Get(1);
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog1, dog2 }, result);
+            result.ShouldAllBeEquivalentTo(new[] { dog1, dog2 });
         }
 
         [Test]
@@ -279,7 +281,7 @@ namespace SimpleCache.Tests
             var result = sut.Index(cat => cat.WorstEnemy.Age).GetWithUndefined();
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { cat3 }, result);
+            result.ShouldAllBeEquivalentTo(new[] { cat3 });
         }
     }
 }
