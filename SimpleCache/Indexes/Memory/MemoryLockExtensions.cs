@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace SimpleCache.Indexes.Memory
 {
-    public static class MemoryLockExtensions
+    internal static class MemoryLockExtensions
     {
         private sealed class LockForReading : IDisposable
         {

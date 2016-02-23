@@ -16,7 +16,6 @@ namespace SimpleCache.Indexes
     public interface ICacheIndex<TEntity, TIndexedOn>
         where TEntity: IEntity
     {
-
         IEnumerable<TIndexedOn> Keys { get; }
 
         List<TEntity> Get(TIndexedOn key);

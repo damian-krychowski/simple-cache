@@ -15,17 +15,13 @@ namespace SimpleCache
         where TEntity : IEntity
     {
         private readonly ConcurrentDictionary<Guid, TEntity> _items = new ConcurrentDictionary<Guid, TEntity>();
-        private readonly List<ICacheIndex<TEntity>> _indexes = new List<ICacheIndex<TEntity>>();
+        private readonly List<ICacheIndex<TEntity>> _indexes;
 
-        public void Initialize(CacheDefinition cacheDefinition)
+        public SimpleCache(IEnumerable<Func<ISimpleCache<TEntity>, ICacheIndex<TEntity>>> indexFactories)
         {
-            var cacheIndexFactory = new CacheIndexFactory<TEntity>();
-
-            foreach (var definition in cacheDefinition.Indexes)
-            {
-                var index = cacheIndexFactory.CreateCacheIndex1D(definition, this);
-                _indexes.Add(index);
-            }
+            _indexes = indexFactories
+                .Select(factory => factory(this))
+                .ToList();
         }
 
         public TEntity GetEntity(Guid id) => _items[id];

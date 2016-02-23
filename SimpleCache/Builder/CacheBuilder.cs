@@ -1,58 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using SimpleCache.Indexes;
+using SimpleCache.Indexes.Memory;
+using SimpleCache.Indexes.Memory.Factory;
 
 namespace SimpleCache.Builder
 {
     internal class CacheBuilder<TEntity> : ICacheBuilder<TEntity>
         where TEntity : IEntity
     {
-        private readonly List<ICacheIndexDefinition> _indexesDefinitions = new List<ICacheIndexDefinition>();
-
-        public void AddIndexDefinition<TIndexOn>(CacheIndexDefinition<TEntity, TIndexOn> definition)
-        {
-            _indexesDefinitions.Add(definition);
-        }
+        private readonly List<Func<ISimpleCache<TEntity>, ICacheIndex<TEntity>>> _indexFactories = new List<Func<ISimpleCache<TEntity>, ICacheIndex<TEntity>>>();
 
         public ICacheBuilder<TEntity> WithIndex<TIndexOn>(
             Expression<Func<TEntity, TIndexOn>> indexExpression)
         {
-            AddIndexDefinition(new CacheIndexDefinition<TEntity, TIndexOn>()
-            {
-                IndexExpression = indexExpression,
-            });
+            _indexFactories.Add(parentCache =>
+                CreateIndex(indexExpression, parentCache));
 
             return this;
         }
 
-        public ICacheBuilder<TEntity> WithSortedIndex<TIndexOn, TSortedBy>(
+        private static CacheIndex<TEntity, TIndexOn> CreateIndex<TIndexOn>(
             Expression<Func<TEntity, TIndexOn>> indexExpression, 
-            Func<TEntity, TSortedBy> orderBySelector) where TSortedBy : IComparable<TSortedBy>
+            ISimpleCache<TEntity> parentCache)
         {
-            throw new NotImplementedException();
+            return new CacheIndex<TEntity, TIndexOn>(
+                new IndexMemoryFactory<TEntity,TIndexOn>(), 
+                indexExpression,
+                parentCache);
+        }
+
+        public ISortedIndexBuilder<TEntity> WithSortedIndex<TIndexOn, TOrderBy>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression, 
+            Func<TEntity, TOrderBy> orderBySelector) where TOrderBy : IComparable<TOrderBy>
+        {
+            var sortedIndexBuilder = new SortedIndexBuilder<TEntity>(this);
+
+            _indexFactories.Add(parentCache => sortedIndexBuilder.IsAscending
+                ? CreateAscendingIndex(indexExpression, orderBySelector, parentCache)
+                : CreateDescendingIndex(indexExpression, orderBySelector, parentCache));
+
+            return sortedIndexBuilder;
+        }
+
+        private static ICacheIndex<TEntity> CreateDescendingIndex<TIndexOn, TOrderBy>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression, 
+            Func<TEntity, TOrderBy> orderBySelector, 
+            ISimpleCache<TEntity> parentCache)
+            where TOrderBy : IComparable<TOrderBy>
+        {
+            return new CacheIndex<TEntity, TIndexOn>(
+                new DescendingSortedIndexMemoryFactory<TEntity,TIndexOn,TOrderBy>(orderBySelector),  
+                indexExpression,
+                parentCache);
+        }
+
+        private static ICacheIndex<TEntity> CreateAscendingIndex<TIndexOn, TOrderBy>(
+            Expression<Func<TEntity, TIndexOn>> indexExpression,
+            Func<TEntity, TOrderBy> orderBySelector, 
+            ISimpleCache<TEntity> parentCache) 
+            where TOrderBy : IComparable<TOrderBy>
+        {
+            return new CacheIndex<TEntity, TIndexOn>(
+                new AscendingSortedIndexMemoryFactory<TEntity,TIndexOn,TOrderBy>(orderBySelector), 
+                indexExpression,
+                parentCache);
         }
 
         ISimpleCache<TEntity> ICacheBuilder<TEntity>.BuildUp()
         {
-            SimpleCache<TEntity> cache = new SimpleCache<TEntity>();
-
-            cache.Initialize(new CacheDefinition()
-            {
-                Indexes = _indexesDefinitions,
-            });
-
+            var cache = new SimpleCache<TEntity>(_indexFactories);
             return cache;
         }
 
         public ISimpleCache<TEntity> BuildUp(IEnumerable<TEntity> entities)
         {
-            SimpleCache<TEntity> cache = new SimpleCache<TEntity>();
-
-            cache.Initialize(new CacheDefinition()
-            {
-                Indexes = _indexesDefinitions,
-            });
-
+            var cache = new SimpleCache<TEntity>(_indexFactories);
             cache.AddOrUpdateRange(entities);
 
             return cache;

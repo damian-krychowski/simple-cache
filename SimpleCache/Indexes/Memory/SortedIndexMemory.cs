@@ -9,12 +9,30 @@ namespace SimpleCache.Indexes.Memory
         where TOrderBy : IComparable<TOrderBy>
     {
         private readonly Func<TEntity, TOrderBy> _orderBySelector;
-        private readonly FuncComparer<TEntity, TOrderBy> _entitiesComparer;
+        private readonly IComparer<TEntity> _entitiesComparer;
 
-        public SortedIndexMemory(Func<TEntity, TOrderBy> orderBySelector)
+        public SortedIndexMemory(
+            Func<TEntity, TOrderBy> orderBySelector,
+            IComparer<TEntity> entitiesComparer)
         {
             _orderBySelector = orderBySelector;
-            _entitiesComparer = new FuncComparer<TEntity, TOrderBy>(orderBySelector);
+            _entitiesComparer = entitiesComparer;
+        }
+
+        public static SortedIndexMemory<TEntity, TIndexOn, TOrderBy> CreateAscending(
+            Func<TEntity, TOrderBy> orderBySelector)
+        {
+            return new SortedIndexMemory<TEntity, TIndexOn, TOrderBy>(
+                orderBySelector,
+                new AscendingFuncComparer<TEntity,TOrderBy>(orderBySelector));
+        }
+
+        public static SortedIndexMemory<TEntity, TIndexOn, TOrderBy> CreateDescending(
+            Func<TEntity, TOrderBy> orderBySelector)
+        {
+            return new SortedIndexMemory<TEntity, TIndexOn, TOrderBy>(
+                orderBySelector,
+                new DescendingFuncComparer<TEntity,TOrderBy>(orderBySelector));
         }
 
         public override void Insert(TEntity entity, TIndexOn key)
@@ -23,7 +41,7 @@ namespace SimpleCache.Indexes.Memory
             {
                 var indexList = GetIndexList(key);
                 AddSorted(indexList, entity);
-                IndexationList.MarkIndexation(entity.Id, EntitiesWithUndefinedKey);
+                IndexationList.MarkIndexation(entity.Id, indexList);
             }
         }
 
@@ -44,18 +62,8 @@ namespace SimpleCache.Indexes.Memory
                 entities.Add(item);
                 return;
             }
-            if (_orderBySelector(entities.Last()).CompareTo(_orderBySelector(item)) <= 0)
-            {
-                entities.Add(item);
-                return;
-            }
-            if (_orderBySelector(entities.First()).CompareTo(_orderBySelector(item)) >= 0)
-            {
-                entities.Insert(0, item);
-                return;
-            }
 
-            int index = entities.BinarySearch(item, _entitiesComparer);
+            var index = entities.BinarySearch(item, _entitiesComparer);
 
             if (index < 0)
             {

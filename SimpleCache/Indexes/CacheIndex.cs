@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using SimpleCache.ExtensionMethods;
 using SimpleCache.Indexes.Memory;
+using SimpleCache.Indexes.Memory.Factory;
 
 namespace SimpleCache.Indexes
 {
@@ -14,12 +15,21 @@ namespace SimpleCache.Indexes
     {
         private IIndexMemory<TEntity, TIndexOn> _memory;
 
-        private Func<TEntity, TIndexOn> _indexFunc;
-        private ISimpleCache<TEntity> _parentCache;
+        private readonly Func<TEntity, TIndexOn> _indexFunc;
+        private readonly IIndexMemoryFactory<TEntity, TIndexOn> _memoryFactory;
+        private readonly ISimpleCache<TEntity> _parentCache;
 
-        public CacheIndex(IIndexMemory<TEntity, TIndexOn> memory)
+        public CacheIndex(
+            IIndexMemoryFactory<TEntity, TIndexOn> memoryFactory,
+            Expression<Func<TEntity, TIndexOn>> indexExpression,
+            ISimpleCache<TEntity> parentCache)
         {
-            _memory = memory;
+            _memory = memoryFactory.Create();
+
+            _indexFunc = indexExpression.Compile();
+            IndexExpression = indexExpression;
+            _memoryFactory = memoryFactory;
+            _parentCache = parentCache;
         }
 
         public bool IsOnExpression(Expression indexExpression) => indexExpression.Comapre(IndexExpression);
@@ -44,7 +54,7 @@ namespace SimpleCache.Indexes
 
         public void Rebuild()
         {
-            _memory = new IndexMemory<TEntity, TIndexOn>();
+            _memory = _memoryFactory.Create();
 
             foreach (var entity in _parentCache.Items)
             {
@@ -54,20 +64,7 @@ namespace SimpleCache.Indexes
 
         public List<TEntity> GetWithUndefined() => _memory.IndexedWithUndefinedKey();
 
-        public void Initialize(
-            Expression<Func<TEntity, TIndexOn>> firstIndexedProperty, 
-            ISimpleCache<TEntity> parentCache)
-        {
-            _indexFunc = firstIndexedProperty.Compile();
-            IndexExpression = firstIndexedProperty;
-            _parentCache = parentCache;
-        }
-
-        public Expression<Func<TEntity, TIndexOn>> IndexExpression
-        {
-            get;
-            private set;
-        }
+        public Expression<Func<TEntity, TIndexOn>> IndexExpression { get; }
 
         public IEnumerable<TIndexOn> Keys => _memory.Keys();
 
