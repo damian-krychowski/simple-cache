@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.SqlServer.Server;
 using NUnit.Framework;
 using SimpleCache.Builder;
@@ -65,7 +66,7 @@ namespace SimpleCache.Tests
                 .ToList();
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] {teacher1, teacher2, teacher6, teacher7}, result);
+            result.ShouldAllBeEquivalentTo(new[] { teacher1, teacher2, teacher6, teacher7 });
         }
 
         [Test]
@@ -98,7 +99,7 @@ namespace SimpleCache.Tests
                 .ToList();
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { teacher1, teacher5 }, result);
+            result.ShouldAllBeEquivalentTo(new[] { teacher1, teacher5 });
         }
 
         [Test]
@@ -109,9 +110,12 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<IndexNotFoundException>(() => sut.Query()
+            Action act = () => sut
+                .Query()
                 .Where(t => t.ResponsibleForClasses, classes => classes == "Mathematics")
-                .ToList());
+                .ToList();
+
+            act.ShouldThrow<IndexNotFoundException>();
         }
 
         [Test]
@@ -122,9 +126,11 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<ArgumentNullException>(() => sut.Query()
+            Action act = () => sut.Query()
                 .Where<string>(null, classes => classes == "Mathematics")
-                .ToList());
+                .ToList();
+
+            act.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
@@ -135,9 +141,11 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<ArgumentNullException>(() => sut.Query()
+            Action act = () => sut.Query()
                 .Where(t => t.ResponsibleForClasses, null)
-                .ToList());
+                .ToList();
+
+           act.ShouldThrow<ArgumentNullException>();
         }
     }
 }
