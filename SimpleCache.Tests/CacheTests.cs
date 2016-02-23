@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using SimpleCache.Builder;
 
@@ -23,7 +24,7 @@ namespace SimpleCache.Tests
                .BuildUp();
 
             //Assert
-            CollectionAssert.AreEquivalent(Enumerable.Empty<Dog>(), sut.Items);
+            sut.Items.Should().BeEmpty();
         }
 
         [Test]
@@ -39,7 +40,7 @@ namespace SimpleCache.Tests
             sut.AddOrUpdate(dog);
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog }, sut.Items );
+            sut.Items.ShouldAllBeEquivalentTo(new[] {dog});
         }
 
         [Test]
@@ -50,7 +51,8 @@ namespace SimpleCache.Tests
                .BuildUp();
             
             //Act & Assert
-            Assert.Throws<ArgumentNullException>(()=>sut.AddOrUpdate(null));
+            Action act = () => sut.AddOrUpdate(null);
+            act.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
@@ -68,7 +70,7 @@ namespace SimpleCache.Tests
             sut.AddOrUpdateRange(new[] { dog1, dog2, dog3 });
 
             //Assert
-           CollectionAssert.AreEquivalent(new[] { dog1, dog2, dog3 }, sut.Items);
+            sut.Items.ShouldAllBeEquivalentTo(new[] {dog1,dog2,dog3});
          }
 
 
@@ -80,7 +82,8 @@ namespace SimpleCache.Tests
                .BuildUp();
 
             //Act & Assert
-            Assert.Throws<ArgumentNullException>(() => sut.AddOrUpdateRange(null));
+            Action act = ()=> sut.AddOrUpdateRange(null);
+            act.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
@@ -98,7 +101,7 @@ namespace SimpleCache.Tests
             var result = sut.GetEntity(dog1.Id);
 
             //Assert
-            Assert.That(result, Is.EqualTo(dog1));
+            result.ShouldBeEquivalentTo(dog1);
         }
 
         [Test]
@@ -109,7 +112,8 @@ namespace SimpleCache.Tests
                 .BuildUp();
 
             //Act & Assert
-            Assert.Throws<KeyNotFoundException>(() => sut.GetEntity(Guid.NewGuid()));
+            Action act = () => sut.GetEntity(Guid.NewGuid());
+            act.ShouldThrow<KeyNotFoundException>();
         }
 
         [Test]
@@ -128,8 +132,8 @@ namespace SimpleCache.Tests
             var result = sut.TryGetEntity(dog1.Id, out entity);
 
             //Assert
-            Assert.That(result, Is.True);
-            Assert.That(entity, Is.EqualTo(dog1));
+            result.Should().BeTrue();
+            entity.ShouldBeEquivalentTo(dog1);
         }
 
         [Test]
@@ -144,8 +148,8 @@ namespace SimpleCache.Tests
             var result = sut.TryGetEntity(Guid.NewGuid(), out entity);
 
             //Assert
-            Assert.That(result, Is.False);
-            Assert.That(entity, Is.Null);
+            result.Should().BeFalse();
+            entity.Should().BeNull();
         }
 
         [Test]
@@ -163,7 +167,7 @@ namespace SimpleCache.Tests
             var result = sut.ContainsEntity(dog1.Id);
 
             //Assert
-            Assert.That(result, Is.True);
+            result.Should().BeTrue();
         }
 
         [Test]
@@ -177,7 +181,7 @@ namespace SimpleCache.Tests
             var result = sut.ContainsEntity(Guid.NewGuid());
 
             //Assert
-            Assert.That(result, Is.False);
+            result.Should().BeFalse();
         }
 
         [Test]
@@ -193,7 +197,7 @@ namespace SimpleCache.Tests
                 .BuildUp(new[] { dog1, dog2, dog3 });
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog1, dog2, dog3 }, sut.Items);
+            sut.Items.ShouldAllBeEquivalentTo(new[] {dog1, dog2, dog3});
         }
 
 
@@ -212,7 +216,7 @@ namespace SimpleCache.Tests
             sut.Remove(dog1.Id);
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { dog2, dog3 }, sut.Items);
+            sut.Items.ShouldAllBeEquivalentTo(new[] { dog2, dog3 });
         }
 
         [Test]
@@ -232,7 +236,7 @@ namespace SimpleCache.Tests
             sut.AddOrUpdate(updatedDog1);
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { updatedDog1, dog2, dog3 }, sut.Items);
+            sut.Items.ShouldAllBeEquivalentTo(new[] { updatedDog1, dog2, dog3 });
         }
 
         [Test]
@@ -253,7 +257,7 @@ namespace SimpleCache.Tests
             sut.AddOrUpdateRange(new[] {updatedDog1, updatedDog2});
 
             //Assert
-            CollectionAssert.AreEquivalent(new[] { updatedDog1, updatedDog2, dog3 }, sut.Items);
+            sut.Items.ShouldAllBeEquivalentTo(new[] { updatedDog1, updatedDog2, dog3 });
         }
     }
 }
