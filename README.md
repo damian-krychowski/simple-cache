@@ -2,7 +2,7 @@
 The goal of the SimpleCache is to simplify data caching. It provides special data structures which can aggregate entities by given expression - indexes. Each created index is updated during the cache update - this approach allows to increase reading speed for the price of writing speed and used memory. Index can be used to access stored entities directly or it can be combined with other indexes to perfom more complex queries.
 
 #Entity
-Entity represents an object identified by an unique id (Guid). To store an object in the cache it has to implement `IEntity` interface.
+Entity represents an object identified by an unique id (Guid). The object should implement `IEntity` interface to be stored in the cache.
 
 ```c#
 public interface IEntity
@@ -27,7 +27,7 @@ class Cat : IEntity
 
 #Cache
 ###Factory
-To prepare the cache one should use dedicated factory
+Dedicated factory should be used to prepare the cache.
 
 ```c#
 var cache = CacheFactory.CreateFor<Cat>()
@@ -35,7 +35,7 @@ var cache = CacheFactory.CreateFor<Cat>()
 .WithSortedIndex(cat => cat.WorstEnemy.Age, cat=> cat.Name).Ascending()
 .BuildUp();
 ```
-The empty cache for cats was created. To creat a cache with some initial data:
+The empty cache for cats was created. There is also a method to create the cache with some initial data:
 
 ```c#
 .BuildUp(new[]{ cat1, cat2, cat3});
@@ -113,12 +113,12 @@ var cats = cache.Query()
     .ToList();
 ```
 
-To build the query, used indexes and conditions they have to fulfill should be specified explicitly. For example
+Indexes and conditions, which they have to fulfill, should be specified explicitly to build the query. For example:
 
 ```c#
 .Where(cat => cat.Name, name => name.Length > 4)
 ```
-means, that `cat => cat.Name` index keys should be longer than 4 letters. The query allows to combine more general indexes to acquire specific data. The intersection of each indexed entity represents the final collection. This, however, takes some time to be computed. But there is another way.
+It means, that `cat => cat.Name` index's keys should be longer than 4 letters. The query allows to combine more general indexes to acquire specific data. The intersection of each indexed entity represents the final collection. This, however, takes some time to be computed. But there is another way.
 
 ```c#
 var cache = CacheFactory.CreateFor<Cat>()
