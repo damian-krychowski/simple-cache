@@ -35,7 +35,7 @@ var cache = CacheFactory.CreateFor<Cat>()
 .WithSortedIndex(cat => cat.WorstEnemy.Age, cat=> cat.Name).Ascending()
 .BuildUp();
 ```
-The empty cache for cats was created. To created a cache with some initial data:
+The empty cache for cats was created. To creat a cache with some initial data:
 
 ```c#
 .BuildUp(new[]{ cat1, cat2, cat3});
