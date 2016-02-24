@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builder\CacheBuilder.cs" />
-    <Compile Include="Builder\CacheBuilderFactory.cs" />
+    <Compile Include="Builder\CacheFactory.cs" />
     <Compile Include="Builder\ISortedIndexBuilder.cs" />
     <Compile Include="Builder\SortedIndexBuilder.cs" />
     <Compile Include="Indexes\CacheIndex.cs" />

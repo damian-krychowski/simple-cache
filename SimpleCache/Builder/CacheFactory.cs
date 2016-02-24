@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SimpleCache.Builder
 {
-    public class CacheBuilderFactory
+    public class CacheFactory
     {
-        public static ICacheBuilder<TEntity> Create<TEntity>() where TEntity : IEntity
+        public static ICacheBuilder<TEntity> CreateFor<TEntity>() where TEntity : IEntity
         {
             return new CacheBuilder<TEntity>();
         }
