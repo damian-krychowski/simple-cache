@@ -129,4 +129,4 @@ var cats = cache
     .Index(cat => cat.Name.Lengh > 4 && cat.WorstEnemy.Age > 1)
     .Get(true);
 ```
-The second example presents solution faster than the first one. There is only one index, so the cache will use less memory as well.
+The second example presents solution faster than the first one. There is only one index registered, so the cache will use less memory as well.
