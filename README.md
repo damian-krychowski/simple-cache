@@ -3,6 +3,8 @@ The goal of the SimpleCache is to simplify data caching. It provides special dat
 
 Nuget: https://www.nuget.org/packages/simple-cache/
 
+Build: <image src="https://ci.appveyor.com/api/projects/status/e8apjfhk95x9x22e/branch/master?svg=true">
+
 #Entity
 Entity represents an object identified by an unique id (Guid). The object should implement `IEntity` interface to be stored in the cache.
 
