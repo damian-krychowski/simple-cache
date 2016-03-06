@@ -1,6 +1,8 @@
 # simple-cache
 The goal of the SimpleCache is to simplify data caching. It provides special data structures which can aggregate entities by given expression - indexes. Each created index is updated during the cache update - this approach allows to increase reading speed for the price of writing speed and used memory. Index can be used to access stored entities directly or it can be combined with other indexes to perfom more complex queries.
 
+Nuget: https://www.nuget.org/packages/simple-cache/
+
 #Entity
 Entity represents an object identified by an unique id (Guid). The object should implement `IEntity` interface to be stored in the cache.
 
